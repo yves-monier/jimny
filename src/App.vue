@@ -2,18 +2,9 @@
   <div class="container mt-2">
     <h4>{{ path }}</h4>
     <div class="form-group mt-4 mb-2">
-      <input
-        v-model="searchString"
-        class="form-control form-control-sm"
-        placeholder="File search"
-      />
+      <input v-model="searchString" class="form-control form-control-sm" placeholder="File search" />
     </div>
-    <FilesViewer
-      :files="filteredFiles"
-      :nested="nested"
-      @back="back"
-      @folderclick="open($event.name)"
-    />
+    <FilesViewer :sentences="sentences" :files="filteredFiles" :nested="nested" @back="back" @folderclick="open($event.name)" />
   </div>
 </template>
 
@@ -42,6 +33,13 @@ export default {
   },
 
   setup() {
+    let sentences = [];
+    try {
+      const jsonString = fs.readFileSync("C:/Dev/droopy/greynir/jimny_sentences.json");
+      sentences = JSON.parse(jsonString);
+    } catch (err) {
+      console.log(err);
+    }
     const path = ref(app.getAppPath());
     const files = computed(() => {
       const fileNames = fs.readdirSync(path.value);
@@ -85,6 +83,7 @@ export default {
     });
 
     return {
+      sentences,
       path,
       open,
       back,

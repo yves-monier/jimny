@@ -5,6 +5,7 @@ import IconFolderOpen from "./IconFolderOpen";
 
 export default {
   props: {
+    sentences: { type: Array, default: () => [] },
     files: { type: Array, default: () => [] },
   },
   components: { IconFile, IconFolder, IconFolderOpen },
@@ -18,6 +19,7 @@ export default {
 </script>
 
 <template>
+  <h1>Sentences: {{ sentences.length }}</h1>
   <table class="table">
     <tbody>
       <tr class="clickable" @click="$emit('back')">

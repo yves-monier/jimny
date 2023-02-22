@@ -1,5 +1,7 @@
 # jimny
 
+From https://www.youtube.com/watch?v=LnRCX074VfA
+
 ## Project setup
 ```
 npm install

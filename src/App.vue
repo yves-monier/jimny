@@ -1,11 +1,12 @@
 <template>
-  <div class="container mt-2">
+  <SentencesViewer :sentences="sentences" />
+  <!-- div class="container mt-2">
     <h4>{{ path }}</h4>
     <div class="form-group mt-4 mb-2">
       <input v-model="searchString" class="form-control form-control-sm" placeholder="File search" />
     </div>
     <FilesViewer :sentences="sentences" :files="filteredFiles" :nested="nested" @back="back" @folderclick="open($event.name)" />
-  </div>
+  </div -->
 </template>
 
 <script>
@@ -15,7 +16,8 @@ import pathModule from "path";
 import { app } from "@electron/remote";
 import { computed, ref } from "vue";
 
-import FilesViewer from "./components/FilesViewer";
+import SentencesViewer from "./components/SentencesViewer";
+// import FilesViewer from "./components/FilesViewer";
 
 const formatSize = (size) => {
   var i = Math.floor(Math.log(size) / Math.log(1024));
@@ -29,7 +31,8 @@ const formatSize = (size) => {
 export default {
   name: "App",
   components: {
-    FilesViewer,
+    SentencesViewer,
+    // FilesViewer,
   },
 
   setup() {

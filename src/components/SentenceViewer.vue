@@ -18,7 +18,7 @@ export default {
 </script>
 
 <template>
-  <div @mouseenter="$emit('stop-timeout')" @mouseleave="$emit('start-timeout')">
+  <div class="sentence" @mouseenter="$emit('stop-timeout')" @mouseleave="$emit('start-timeout')">
     <header>{{ 1 + current.index }} / {{ current.total }}</header>
     <div class="icelandic">{{ current.sentence.icelandic }}</div>
     <div class="greynir-analysis">
@@ -30,10 +30,32 @@ export default {
       <div v-if="current.sentence.english" class="english">{{ current.sentence.english }}</div>
       <div v-if="current.sentence.french" class="french">{{ current.sentence.french }}</div>
     </div>
+    <div class="dict">
+      <!-- TODO read lemma.pos.json files, with html content -->
+    </div>
   </div>
 </template>
 
 <style scoped>
+.sentence {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+header {
+  margin-bottom: 1rem;
+  text-align: right;
+}
+
+.icelandic {
+  margin-bottom: 1rem;
+}
+
+.english, .french {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
 .greynir-analysis {
   margin-top: 1rem;
   margin-bottom: 1rem;

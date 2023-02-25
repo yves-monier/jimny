@@ -1,10 +1,7 @@
 <template>
   <div class="container mt-2">
-    <header>({{ sentences.length }} sentences)</header>
-    <div class="form-group mt-4 mb-2">
-      <input v-model="current.searchString" class="form-control form-control-sm" placeholder="Search text in sentences" />
-    </div>
-    <SentenceViewer @stop-timeout="onStopTimeout" @start-timeout="onStartTimeout" :current="current" />
+    <Search :sentences="sentences" @select-sentence="onSelectSentence" />
+    <SentenceViewer @stop-timeout="onStopTimeout" @start-timeout="onStartTimeout" :viewed="state" />
   </div>
 </template>
 
@@ -13,6 +10,7 @@ import fs from "fs";
 // import { app } from "@electron/remote";
 // import { computed, ref } from "vue";
 // import FilesViewer from "./components/FilesViewer";
+import Search from "./components/Search";
 import SentenceViewer from "./components/SentenceViewer";
 import { computed, reactive } from "vue";
 
@@ -28,6 +26,7 @@ import { computed, reactive } from "vue";
 export default {
   name: "App",
   components: {
+    Search,
     SentenceViewer,
     // FilesViewer,
   },
@@ -93,15 +92,13 @@ export default {
       console.log(err);
     }
 
-    const current = reactive({
+    const state = reactive({
       total,
       index: 0,
       sentence: computed(
-        () => { return sentences[current.index] }
+        () => { return sentences[state.index] }
       ),
-      searchString: "",
     });
-    // console.log(`Initial sentence: ${JSON.stringify(current)}`)
 
     let intervalId = undefined;
 
@@ -110,23 +107,39 @@ export default {
         clearInterval(intervalId);
         intervalId = undefined
       }
-      console.log(`Stop timeout`)
+      // console.log(`Stop timeout`)
     };
 
-    const onStartTimeout = () => {
-      console.log(`Start timeout`)
+    const doStartTimeout = () => {
+      if (intervalId !== undefined) {
+        clearInterval(intervalId);
+      }
       intervalId = setInterval(() => {
-        current.index = current.index + 1;
-        if (current.index == total) {
-          current.index = 0;
+        state.index = state.index + 1;
+        if (state.index == total) {
+          state.index = 0;
         }
-        // console.log(`Updated sentence: ${JSON.stringify(current)}`)
       }, 10000)
     };
 
-    onStartTimeout();
+    const onStartTimeout = () => {
+      // console.log(`Start timeout`)
+      doStartTimeout();
+    };
 
-    return { sentences, current, onStopTimeout, onStartTimeout };
+    const onSelectSentence = (sentence) => {
+      for (let ii = 0; ii < sentences.length; ii++) {
+        if (sentences[ii].id == sentence.id) {
+          state.index = ii;
+          doStartTimeout();
+          break;
+        }
+      }
+    };
+
+    doStartTimeout();
+
+    return { sentences, state, onStopTimeout, onStartTimeout, onSelectSentence };
   },
 };
 </script>

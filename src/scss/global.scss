@@ -1,0 +1,14 @@
+@font-face {
+    font-family: "Open Sans";
+    src: local("Open Sans"),
+     url(./assets/fonts/OpenSans/OpenSans-Regular.ttf) format("truetype");
+  }
+
+html,
+body {
+    font-family: "Open Sans", Arial, sans-serif;
+}
+
+#app {
+    background-color: white;
+}

@@ -27,13 +27,12 @@ export default {
           const jsonString = fs.readFileSync(f);
           let html = JSON.parse(jsonString);
           d.set(lemmaPos, html);
-          console.log(`dict ${lemmaPos}: ${JSON.stringify(html)}`);
+          // console.log(`dict ${lemmaPos}: ${JSON.stringify(html)}`);
         } catch (err) {
           console.error(`SentenceViewer: ${err}`);
         }
       }
-      console.log(`dict: ${JSON.stringify(d)}`);
-      return [...d];
+      return [...d]; // [ [lemma+pos, dict], ..., [lemma+pos, dict] ]
     });
 
     return { dict };
@@ -55,9 +54,8 @@ export default {
       <div v-if="viewed.sentence.french" class="french">{{ viewed.sentence.french }}</div>
     </div>
     <div class="dict">
-      <div v-for="(entry, index) in dict" :key="index" class="dict-html">
+      <div v-for="(entry, index) in dict" :key="index" class="dict-entry">
         <div v-html="entry[1].dict"></div>
-        <!-- TODO read lemma.pos.json files, with html content -->
       </div>
     </div>
   </div>
@@ -102,5 +100,9 @@ header {
 
 .greynir-lemma::after {
   content: "+";
+}
+
+.dict-entry {
+  border: 1px solid #999;
 }
 </style>

@@ -144,7 +144,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss">
 header {
   margin-bottom: 1rem;
 }

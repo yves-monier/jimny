@@ -1,8 +1,8 @@
 <template>
-  <div class="container mt-2">
+  <!-- div class="container mt-2" -->
     <Search :sentences="sentences" @select-sentence="onSelectSentence" />
     <SentenceViewer @stop-timeout="onStopTimeout" @start-timeout="onStartTimeout" :viewed="state" />
-  </div>
+  <!-- /div -->
 </template>
 
 <script>
@@ -111,15 +111,18 @@ export default {
     };
 
     const doStartTimeout = () => {
-      if (intervalId !== undefined) {
-        clearInterval(intervalId);
-      }
-      intervalId = setInterval(() => {
-        state.index = state.index + 1;
-        if (state.index == total) {
-          state.index = 0;
+      let b = false;
+      if (b) {
+        if (intervalId !== undefined) {
+          clearInterval(intervalId);
         }
-      }, 10000)
+        intervalId = setInterval(() => {
+          state.index = state.index + 1;
+          if (state.index == total) {
+            state.index = 0;
+          }
+        }, 10000)
+      }
     };
 
     const onStartTimeout = () => {
@@ -145,6 +148,10 @@ export default {
 </script>
 
 <style lang="scss">
+.container {
+  width: 100%;
+}
+
 header {
   margin-bottom: 1rem;
 }

@@ -1,7 +1,7 @@
 <script>
 import fs from "fs";
 import path from "path";
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 export default {
   props: {
@@ -15,6 +15,26 @@ export default {
   //   return { onFileClick };
   // },
   setup(props) {
+    const onGreynirEnter = (index) => {
+      console.log(`onGreynirEnter: ${index}`)
+      current.value = index;
+    };
+    const onGreynirLeave = (index) => {
+      console.log(`onGreynirLeave: ${index}`)
+      current.value = -1;
+    };
+
+    const onDictEnter = (index) => {
+      console.log(`onDictEnter: ${index}`)
+      current.value = index;
+    };
+    const onDictLeave = (index) => {
+      console.log(`onDictLeave: ${index}`)
+      current.value = -1;
+    };
+
+    const current = ref(-1);
+
     const dict = computed(() => {
       let d = new Map();
       for (let greynir of props.viewed.sentence.greynir) {
@@ -35,7 +55,7 @@ export default {
       return [...d]; // [ [lemma+pos, dict], ..., [lemma+pos, dict] ]
     });
 
-    return { dict };
+    return { dict, current, onGreynirEnter, onGreynirLeave, onDictEnter, onDictLeave };
   },
 };
 </script>
@@ -45,7 +65,10 @@ export default {
     <header>{{ 1 + viewed.index }} / {{ viewed.total }}</header>
     <div class="icelandic">{{ viewed.sentence.icelandic }}</div>
     <div class="greynir-analysis">
-      <div v-for="(greynir, index) in viewed.sentence.greynir" :key="`greynir-${index}`" class="greynir-word">
+      <div v-for="(greynir, index) in viewed.sentence.greynir" :key="`greynir-${index}`"
+        :class="['greynir-word', (index == current) && 'current-greynir-word']" @mouseenter="onGreynirEnter(index)"
+        @mouseleave="
+          onGreynirLeave(index)">
         <span class="greynir-lemma">{{ greynir.lemma }}</span><span class="greynir-pos">{{ greynir.pos }}</span>
       </div>
     </div>
@@ -54,7 +77,9 @@ export default {
       <div v-if="viewed.sentence.french" class="french">{{ viewed.sentence.french }}</div>
     </div>
     <div class="dict">
-      <div v-for="(entry, index) in dict" :key="index" class="dict-entry">
+      <div v-for="(entry, index) in dict" :key="index" :class="['dict-entry', (index == current) && 'current-dict-entry']"
+        @mouseenter="onDictEnter(index)" @mouseleave="
+          onDictLeave(index)">
         <div v-html="entry[1].dict"></div>
       </div>
     </div>
@@ -92,6 +117,10 @@ header {
   margin-right: 0.3rem;
 }
 
+.current-greynir-word {
+  text-decoration: underline;
+}
+
 .greynir-lemma {}
 
 .greynir-pos {
@@ -104,5 +133,9 @@ header {
 
 .dict-entry {
   border: 1px solid #999;
+}
+
+.current-dict-entry {
+  background-color: #bbb;
 }
 </style>

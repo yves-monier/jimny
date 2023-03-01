@@ -111,8 +111,8 @@ export default {
     };
 
     const doStartTimeout = () => {
-      let b = false;
-      if (b) {
+      let useTimeout = true;
+      if (useTimeout) {
         if (intervalId !== undefined) {
           clearInterval(intervalId);
         }

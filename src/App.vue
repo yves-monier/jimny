@@ -153,6 +153,5 @@ export default {
 }
 
 header {
-  margin-bottom: 1rem;
 }
 </style>

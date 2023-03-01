@@ -88,15 +88,22 @@ export default {
 
 <style scoped>
 .sentence {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 header {
   margin-bottom: 1rem;
-  text-align: right;
 }
 
+.dict {
+  flex:1;
+  min-height: 0;
+  overflow-y: auto;
+}
 .icelandic {
   margin-bottom: 1rem;
 }

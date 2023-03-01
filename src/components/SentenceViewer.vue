@@ -15,21 +15,25 @@ export default {
   //   return { onFileClick };
   // },
   setup(props) {
+    let dictElements = ref(null);
+
     const onGreynirEnter = (index) => {
-      console.log(`onGreynirEnter: ${index}`)
+      // console.log(`onGreynirEnter: ${index}`)
       current.value = index;
+
+      dictElements.value[index].scrollIntoView(); 
     };
-    const onGreynirLeave = (index) => {
-      console.log(`onGreynirLeave: ${index}`)
+    const onGreynirLeave = (/*index*/) => {
+      // console.log(`onGreynirLeave: ${index}`)
       current.value = -1;
     };
 
     const onDictEnter = (index) => {
-      console.log(`onDictEnter: ${index}`)
+      // console.log(`onDictEnter: ${index}`)
       current.value = index;
     };
-    const onDictLeave = (index) => {
-      console.log(`onDictLeave: ${index}`)
+    const onDictLeave = (/*index*/) => {
+      // console.log(`onDictLeave: ${index}`)
       current.value = -1;
     };
 
@@ -43,19 +47,20 @@ export default {
         let lemmaPos = `${lemma}+${pos}`;
         let f = path.join("C:/Dev/droopy/greynir/jimny_words", `${lemmaPos}.json`);
         try {
-          console.log(`read file: ${f}`)
+          // console.log(`read file: ${f}`)
           const jsonString = fs.readFileSync(f);
           let html = JSON.parse(jsonString);
           d.set(lemmaPos, html);
           // console.log(`dict ${lemmaPos}: ${JSON.stringify(html)}`);
         } catch (err) {
           console.error(`SentenceViewer: ${err}`);
+          d.set(lemmaPos, {dict:`File not found: ${lemmaPos}.json`});
         }
       }
       return [...d]; // [ [lemma+pos, dict], ..., [lemma+pos, dict] ]
     });
 
-    return { dict, current, onGreynirEnter, onGreynirLeave, onDictEnter, onDictLeave };
+    return { dict, current, onGreynirEnter, onGreynirLeave, onDictEnter, onDictLeave, dictElements };
   },
 };
 </script>
@@ -77,7 +82,7 @@ export default {
       <div v-if="viewed.sentence.french" class="french">{{ viewed.sentence.french }}</div>
     </div>
     <div class="dict">
-      <div v-for="(entry, index) in dict" :key="index" :class="['dict-entry', (index == current) && 'current-dict-entry']"
+      <div v-for="(entry, index) in dict" :key="index" ref="dictElements" :class="['dict-entry', (index == current) && 'current-dict-entry']"
         @mouseenter="onDictEnter(index)" @mouseleave="
           onDictLeave(index)">
         <div v-html="entry[1].dict"></div>

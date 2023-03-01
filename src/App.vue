@@ -1,8 +1,15 @@
 <template>
-  <!-- div class="container mt-2" -->
+  <header>
+    <div class="flags">
+      <div :class="['flag', 'flag-FR', !flags['FR'] && 'flag-off']" @click="onToggleFlag($event, 'FR')"></div>
+      <div :class="['flag', 'flag-UK', !flags['UK'] && 'flag-off']" @click="onToggleFlag($event, 'UK')"></div>
+    </div>
+    <div class="actions">
+      <div class="pause"></div>
+    </div>
     <Search :sentences="sentences" @select-sentence="onSelectSentence" />
-    <SentenceViewer @stop-timeout="onStopTimeout" @start-timeout="onStartTimeout" :viewed="state" />
-  <!-- /div -->
+  </header>
+  <SentenceViewer @stop-timeout="onStopTimeout" @start-timeout="onStartTimeout" :viewed="state" />
 </template>
 
 <script>
@@ -82,6 +89,21 @@ export default {
     //   filteredFiles,
     // };
 
+    const flags = reactive({ "FR": true, "UK": true });
+
+    const onToggleFlag = (ev, lang) => {
+      flags[lang] = !flags[lang];
+      let hasFlagOn = false;
+      for (const [/*lang*/, b] of Object.entries(flags)) {
+        hasFlagOn = hasFlagOn || b;
+      }
+      if (hasFlagOn) {
+        doStartTimeout();
+      } else {
+        flags[lang] = !flags[lang];
+      }
+    };
+
     let sentences = [];
     let total = 0;
     try {
@@ -117,9 +139,31 @@ export default {
           clearInterval(intervalId);
         }
         intervalId = setInterval(() => {
-          state.index = state.index + 1;
-          if (state.index == total) {
-            state.index = 0;
+          let foundNext = false;
+          while (!foundNext) {
+            state.index = state.index + 1;
+            if (state.index == total) {
+              state.index = 0;
+            }
+            foundNext = true;
+            if (flags.UK) {
+              if (!state.sentence.english) {
+                foundNext = false
+              }
+            } else {
+              if (state.sentence.english) {
+                foundNext = false
+              }
+            }
+            if (flags.FR) {
+              if (!state.sentence.french) {
+                foundNext = false
+              }
+            } else {
+              if (state.sentence.french) {
+                foundNext = false
+              }
+            }
           }
         }, 10000)
       }
@@ -142,7 +186,7 @@ export default {
 
     doStartTimeout();
 
-    return { sentences, state, onStopTimeout, onStartTimeout, onSelectSentence };
+    return { sentences, state, onStopTimeout, onStartTimeout, onSelectSentence, flags, onToggleFlag };
   },
 };
 </script>
@@ -152,6 +196,23 @@ export default {
   width: 100%;
 }
 
-header {
+header {}
+
+.flag {
+  width: 24px;
+  height: 16px;
+  background-size: cover;
+}
+
+.flag-FR {
+  background-image: url("./assets/flags/flag_FR.jpg");
+}
+
+.flag-UK {
+  background-image: url("./assets/flags/flag_UK.jpg");
+}
+
+.flag-off {
+  opacity: 0.5;
 }
 </style>

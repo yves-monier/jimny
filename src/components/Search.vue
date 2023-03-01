@@ -31,7 +31,7 @@ export default {
                         store.results = [];
                     } else {
                         // search store.searched
-                        let res = props.sentences.filter(s => s.icelandic.includes(store.searched));
+                        let res = props.sentences.filter(s => s.icelandic.includes(store.searched) || (s.english && s.english.includes(store.searched)) || (s.french && s.french.includes(store.searched)));
                         store.results = res;
                     }
                 }, 500);
@@ -64,8 +64,8 @@ export default {
                     @click="$emit('select-sentence', sentence)">
                     {{ sentence.icelandic }}
                     <!-- span class="search-src" v-html="highlightSearch(word.src)"></span><span class="search-target"
-                                                                        v-html="highlightSearch(word.target)">
-                                                                    </span -->
+                                                                                    v-html="highlightSearch(word.target)">
+                                                                                </span -->
                 </li>
             </ul>
         </div>

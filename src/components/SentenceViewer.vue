@@ -21,7 +21,7 @@ export default {
       // console.log(`onGreynirEnter: ${index}`)
       current.value = index;
 
-      dictElements.value[index].scrollIntoView(); 
+      dictElements.value[index].scrollIntoView();
     };
     const onGreynirLeave = (/*index*/) => {
       // console.log(`onGreynirLeave: ${index}`)
@@ -54,7 +54,7 @@ export default {
           // console.log(`dict ${lemmaPos}: ${JSON.stringify(html)}`);
         } catch (err) {
           console.error(`SentenceViewer: ${err}`);
-          d.set(lemmaPos, {dict:`File not found: ${lemmaPos}.json`});
+          d.set(lemmaPos, { dict: `File not found: ${lemmaPos}.json` });
         }
       }
       return [...d]; // [ [lemma+pos, dict], ..., [lemma+pos, dict] ]
@@ -69,6 +69,10 @@ export default {
   <div class="sentence" @mouseenter="$emit('stop-timeout')" @mouseleave="$emit('start-timeout')">
     <header>{{ 1 + viewed.index }} / {{ viewed.total }}</header>
     <div class="icelandic">{{ viewed.sentence.icelandic }}</div>
+    <div class="detail">
+      <div v-if="viewed.sentence.english" class="english">{{ viewed.sentence.english }}</div>
+      <div v-if="viewed.sentence.french" class="french">{{ viewed.sentence.french }}</div>
+    </div>
     <div class="greynir-analysis">
       <div v-for="(greynir, index) in viewed.sentence.greynir" :key="`greynir-${index}`"
         :class="['greynir-word', (index == current) && 'current-greynir-word']" @mouseenter="onGreynirEnter(index)"
@@ -77,15 +81,12 @@ export default {
         <span class="greynir-lemma">{{ greynir.lemma }}</span><span class="greynir-pos">{{ greynir.pos }}</span>
       </div>
     </div>
-    <div class="detail">
-      <div v-if="viewed.sentence.english" class="english">{{ viewed.sentence.english }}</div>
-      <div v-if="viewed.sentence.french" class="french">{{ viewed.sentence.french }}</div>
-    </div>
     <div class="dict">
-      <div v-for="(entry, index) in dict" :key="index" ref="dictElements" :class="['dict-entry', (index == current) && 'current-dict-entry']"
-        @mouseenter="onDictEnter(index)" @mouseleave="
+      <div v-for="(entry, index) in dict" :key="index" ref="dictElements"
+        :class="['dict-entry', (index == current) && 'current-dict-entry']" @mouseenter="onDictEnter(index)" @mouseleave="
           onDictLeave(index)">
-        <div v-html="entry[1].dict"></div>
+        <div class="dict-index">{{ 1+index }}</div>
+        <div class="dict-html" v-html="entry[1].dict"></div>
       </div>
     </div>
   </div>
@@ -105,13 +106,23 @@ header {
 }
 
 .dict {
-  flex:1;
+  flex: 1;
   min-height: 0;
   overflow-y: auto;
+  display: flex;
+  flex-direction: row;
 }
-.icelandic {
-  margin-bottom: 1rem;
+
+.dict-entry {
+  border: 1px solid #999;
+  flex: 1 0 100vw;
 }
+
+.current-dict-entry {
+  background-color: #bbb;
+}
+
+.icelandic {}
 
 .english,
 .french {
@@ -119,10 +130,7 @@ header {
   margin-bottom: 1rem;
 }
 
-.greynir-analysis {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-}
+.greynir-analysis {}
 
 .greynir-word {
   display: inline-block;
@@ -141,13 +149,5 @@ header {
 
 .greynir-lemma::after {
   content: "+";
-}
-
-.dict-entry {
-  border: 1px solid #999;
-}
-
-.current-dict-entry {
-  background-color: #bbb;
 }
 </style>

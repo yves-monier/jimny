@@ -142,6 +142,11 @@ header {
   right: 0;
 }
 
+.dict-html {
+  overflow-y: auto;
+  width: 100%;
+}
+
 .icelandic {}
 
 .english,

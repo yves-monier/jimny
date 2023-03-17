@@ -16,7 +16,8 @@
     "@electron/remote": "^2.0.9",
     "bootstrap": "^5.2.3",
     "core-js": "^3.6.5",
-    "vue": "^3.0.0"
+    "vue": "^3.0.0",
+    "vue-custom-scrollbar": "^1.4.4"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.12",

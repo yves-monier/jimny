@@ -85,7 +85,8 @@ export default {
       <div v-for="(entry, index) in dict" :key="index" ref="dictElements"
         :class="['dict-entry', (index == current) && 'current-dict-entry']" @mouseenter="onDictEnter(index)" @mouseleave="
           onDictLeave(index)">
-        <div class="dict-index">{{ 1+index }}</div>
+        <div v-if="index > 0" class="dict-nav dict-prev">{{ viewed.sentence.greynir[index - 1].lemma }}</div>
+        <div v-if="index < dict.length - 1" class="dict-nav dict-next">{{ viewed.sentence.greynir[index + 1].lemma }}</div>
         <div class="dict-html" v-html="entry[1].dict"></div>
       </div>
     </div>
@@ -115,11 +116,30 @@ header {
 
 .dict-entry {
   border: 1px solid #999;
-  flex: 1 0 100vw;
+  flex: 0 0 100vw;
+  position: relative;
+  display: flex;
 }
 
 .current-dict-entry {
   background-color: #bbb;
+}
+
+.dict-prev,
+.dict-next {
+  position: absolute;
+  top: 50%;
+  background-color: blue;
+  color: white;
+  font-size: 80%;
+}
+
+.dict-prev {
+  left: 0;
+}
+
+.dict-next {
+  right: 0;
 }
 
 .icelandic {}
@@ -149,5 +169,4 @@ header {
 
 .greynir-lemma::after {
   content: "+";
-}
-</style>
+}</style>

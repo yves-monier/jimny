@@ -1,17 +1,3 @@
-<template>
-  <header>
-    <div class="flags">
-      <div :class="['flag', 'flag-FR', !flags['FR'] && 'flag-off']" @click="onToggleFlag($event, 'FR')"></div>
-      <div :class="['flag', 'flag-UK', !flags['UK'] && 'flag-off']" @click="onToggleFlag($event, 'UK')"></div>
-    </div>
-    <div class="actions">
-      <div class="pause"></div>
-    </div>
-    <Search :sentences="sentences" @select-sentence="onSelectSentence" />
-  </header>
-  <SentenceViewer @stop-timeout="onStopTimeout" @start-timeout="onStartTimeout" :viewed="state" />
-</template>
-
 <script>
 import fs from "fs";
 // import { app } from "@electron/remote";
@@ -132,46 +118,59 @@ export default {
       // console.log(`Stop timeout`)
     };
 
+    const useTimeout = false;
+
     const doStartTimeout = () => {
-      let useTimeout = true;
       if (useTimeout) {
         if (intervalId !== undefined) {
           clearInterval(intervalId);
         }
         intervalId = setInterval(() => {
-          let foundNext = false;
-          while (!foundNext) {
-            state.index = state.index + 1;
-            if (state.index == total) {
-              state.index = 0;
-            }
-            foundNext = true;
-            if (flags.UK) {
-              if (!state.sentence.english) {
-                foundNext = false
-              }
-            } else {
-              if (state.sentence.english) {
-                foundNext = false
-              }
-            }
-            if (flags.FR) {
-              if (!state.sentence.french) {
-                foundNext = false
-              }
-            } else {
-              if (state.sentence.french) {
-                foundNext = false
-              }
-            }
-          }
+          doNextSentence();
         }, 10000)
+      }
+    };
+
+    const doNextSentence = () => {
+      let foundNext = false;
+      while (!foundNext) {
+        state.index = state.index + 1;
+        if (state.index == total) {
+          state.index = 0;
+        }
+        foundNext = true;
+        if (flags.UK) {
+          if (!state.sentence.english) {
+            foundNext = false
+          }
+        } else {
+          if (state.sentence.english) {
+            foundNext = false
+          }
+        }
+        if (flags.FR) {
+          if (!state.sentence.french) {
+            foundNext = false
+          }
+        } else {
+          if (state.sentence.french) {
+            foundNext = false
+          }
+        }
       }
     };
 
     const onStartTimeout = () => {
       // console.log(`Start timeout`)
       doStartTimeout();
+    };
+
+    const onNextSentence = () => {
+      if (useTimeout) {
+        doStartTimeout();
+      } else {
+        doNextSentence();
+      }
     };
 
     const onSelectSentence = (sentence) => {
@@ -186,10 +185,27 @@ export default {
 
     doStartTimeout();
 
-    return { sentences, state, onStopTimeout, onStartTimeout, onSelectSentence, flags, onToggleFlag };
+    return { sentences, state, onStopTimeout, onStartTimeout, onSelectSentence, onNextSentence, flags, onToggleFlag };
   },
 };
 </script>
+
+<template>
+  <header>
+    <div class="toolbar">
+      <div class="flags">
+        <div :class="['flag', 'flag-FR', !flags['FR'] && 'flag-off']" @click="onToggleFlag($event, 'FR')"></div>
+        <div :class="['flag', 'flag-UK', !flags['UK'] && 'flag-off']" @click="onToggleFlag($event, 'UK')"></div>
+      </div>
+      <div class="actions">
+        <div class="pause"></div>
+      </div>
+      <Search :sentences="sentences" @select-sentence="onSelectSentence" />
+    </div>
+  </header>
+  <SentenceViewer @stop-timeout="onStopTimeout" @start-timeout="onStartTimeout" @next-sentence="onNextSentence"
+    :viewed="state" />
+</template>
 
 <style lang="scss">
 .container {

@@ -2,12 +2,14 @@
 import fs from "fs";
 import path from "path";
 import { computed, ref } from 'vue'
+import CustomScrollbar from 'custom-vue-scrollbar';
+import 'custom-vue-scrollbar/dist/style.css';
 
 export default {
   props: {
     viewed: { type: Object, default: () => { } },
   },
-  components: {},
+  components: { CustomScrollbar },
   // setup(_, { emit }) {
   //   const onFileClick = (file) => {
   //     if (file.directory) emit("folderclick", file);
@@ -37,6 +39,11 @@ export default {
       current.value = -1;
     };
 
+    const onDictNav = (step = 1) => {
+      current.value = current.value + step;
+      console.log(`onDictNav: ${current.value}`)
+    };
+
     const current = ref(-1);
 
     const dict = computed(() => {
@@ -60,18 +67,20 @@ export default {
       return [...d]; // [ [lemma+pos, dict], ..., [lemma+pos, dict] ]
     });
 
-    return { dict, current, onGreynirEnter, onGreynirLeave, onDictEnter, onDictLeave, dictElements };
+    return { dict, current, onGreynirEnter, onGreynirLeave, onDictEnter, onDictLeave, onDictNav, dictElements };
   },
 };
 </script>
 
 <template>
   <div class="sentence" @mouseenter="$emit('stop-timeout')" @mouseleave="$emit('start-timeout')">
-    <header>{{ 1 + viewed.index }} / {{ viewed.total }}</header>
-    <div class="icelandic">{{ viewed.sentence.icelandic }}</div>
-    <div class="detail">
-      <div v-if="viewed.sentence.english" class="english">{{ viewed.sentence.english }}</div>
-      <div v-if="viewed.sentence.french" class="french">{{ viewed.sentence.french }}</div>
+    <header>{{ 1 + viewed.index }} / {{ viewed.total }} <button @click="$emit('next-sentence')">next</button></header>
+    <div class="texts">
+      <div class="source-text icelandic">{{ viewed.sentence.icelandic }}</div>
+      <div class="target-texts">
+        <div v-if="viewed.sentence.english" class="english">{{ viewed.sentence.english }}</div>
+        <div v-if="viewed.sentence.french" class="french">{{ viewed.sentence.french }}</div>
+      </div>
     </div>
     <div class="greynir-analysis">
       <div v-for="(greynir, index) in viewed.sentence.greynir" :key="`greynir-${index}`"
@@ -85,9 +94,16 @@ export default {
       <div v-for="(entry, index) in dict" :key="index" ref="dictElements"
         :class="['dict-entry', (index == current) && 'current-dict-entry']" @mouseenter="onDictEnter(index)" @mouseleave="
           onDictLeave(index)">
-        <div v-if="index > 0" class="dict-nav dict-prev">{{ viewed.sentence.greynir[index - 1].lemma }}</div>
-        <div v-if="index < dict.length - 1" class="dict-nav dict-next">{{ viewed.sentence.greynir[index + 1].lemma }}</div>
-        <div class="dict-html" v-html="entry[1].dict"></div>
+        <button v-if="index > 0" class="dict-nav dict-prev" @click="onDictNav(-1)">{{
+          viewed.sentence.greynir[index -
+            1].lemma }}</button>
+        <button v-if="index < dict.length - 1" class="dict-nav dict-next" @click="onDictNav(1)">{{
+          viewed.sentence.greynir[index + 1].lemma }}
+        </button>
+        <!-- div class="dict-html" v-html="entry[1].dict"></div -->
+        <custom-scrollbar class="dict-scroller" :style="{ width: '100%', height: '100%' }">
+          <div class="dict-html" v-html="entry[1].dict"></div>
+        </custom-scrollbar>
       </div>
     </div>
   </div>
@@ -106,10 +122,51 @@ header {
   margin-bottom: 1rem;
 }
 
+.texts {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.source-text {
+  max-width: 50%;
+  flex: 0 0 auto;
+}
+
+.target-texts {
+  flex: 1 1 0px;
+}
+
+.icelandic,
+.french,
+.english {
+  background-size: 16px 12px;
+  background-position: left center;
+  background-repeat: no-repeat;
+  padding-left: 20px;
+  padding-right: 10px;
+}
+
+.icelandic {
+  background-image: url("../assets/flags/flag_IS.jpg");
+}
+
+.french {
+  background-image: url("../assets/flags/flag_FR.jpg");
+}
+
+.english {
+  background-image: url("../assets/flags/flag_UK.jpg");
+}
+
+.translations {}
+
 .dict {
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
+  overflow: hidden;
   display: flex;
   flex-direction: row;
 }
@@ -125,13 +182,18 @@ header {
   background-color: #bbb;
 }
 
-.dict-prev,
-.dict-next {
+.dict-nav {
   position: absolute;
   top: 50%;
   background-color: blue;
   color: white;
   font-size: 80%;
+  display: none;
+  z-index: 1000;
+}
+
+.current-dict-entry .dict-nav {
+  display: block;
 }
 
 .dict-prev {
@@ -140,19 +202,6 @@ header {
 
 .dict-next {
   right: 0;
-}
-
-.dict-html {
-  overflow-y: auto;
-  width: 100%;
-}
-
-.icelandic {}
-
-.english,
-.french {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
 }
 
 .greynir-analysis {}
@@ -174,4 +223,10 @@ header {
 
 .greynir-lemma::after {
   content: "+";
-}</style>
+}
+
+.scrollbar__wrapper {
+  width: 100%;
+  height: 100%;
+}
+</style>

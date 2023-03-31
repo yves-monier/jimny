@@ -22,11 +22,10 @@ export default {
     const onGreynirEnter = (index) => {
       // console.log(`onGreynirEnter: ${index}`)
       current.value = index;
-
       dictElements.value[index].scrollIntoView();
     };
-    const onGreynirLeave = (/*index*/) => {
-      // console.log(`onGreynirLeave: ${index}`)
+    const onGreynirLeave = (index) => {
+      console.log(`onGreynirLeave: ${index}`)
       current.value = -1;
     };
 
@@ -41,7 +40,7 @@ export default {
 
     const onDictNav = (step = 1) => {
       current.value = current.value + step;
-      console.log(`onDictNav: ${current.value}`)
+      dictElements.value[current.value].scrollIntoView();
     };
 
     const current = ref(-1);
@@ -109,7 +108,7 @@ export default {
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" >
 .sentence {
   flex: 1;
   min-height: 0;
@@ -120,11 +119,13 @@ export default {
 
 header {
   margin-bottom: 1rem;
+  padding: 0.33rem;
 }
 
 .texts {
   margin-top: 1rem;
   margin-bottom: 1rem;
+  padding: 0.33rem;
   display: flex;
   flex-direction: row;
   align-items: flex-start;
@@ -163,6 +164,10 @@ header {
 
 .translations {}
 
+.greynir-analysis {
+  padding: 0.33rem;
+}
+
 .dict {
   flex: 1;
   min-height: 0;
@@ -173,13 +178,87 @@ header {
 
 .dict-entry {
   border: 1px solid #999;
-  flex: 0 0 100vw;
+  margin-left: 5px;
+  margin-right: 5px;
+  flex: 0 0 calc(100vw - 10px);
   position: relative;
   display: flex;
 }
 
 .current-dict-entry {
   background-color: #bbb;
+}
+
+.dict-html {
+  .entry {
+    // display: flex;
+    margin-top: 0.5rem;
+  }
+
+  .entry.highlight {
+    background-color: lightsteelblue;
+    transition: background-color 0.5s;
+  }
+
+  // .entry>.entry-url {
+  //   cursor: pointer;
+  //   margin-right: 0.5rem;
+  //   display: inline-block;
+  //   width: 16px;
+  //   height: 16px;
+  //   flex: 0 0 auto;
+  //   background-image: url("images/uwdc.png");
+  //   background-position: left top;
+  //   background-repeat: no-repeat;
+  // }
+
+  .entry>p.headwd {
+    margin-bottom: 0.5rem;
+  }
+
+  .entry>.headwd>.graminfl>.gram {
+    text-transform: capitalize;
+    font-family: 'Inconsolata', monospace;
+    background-color: darkred;
+    color: white;
+    padding: 0 4px;
+    border-radius: 8px;
+  }
+
+  .entry>.headwd>.lemma {
+    font-weight: 700;
+  }
+
+  .entry .sense {
+    margin-bottom: 0.5rem;
+  }
+
+  .entry .sense .re {
+    margin-top: 0.5rem;
+  }
+
+  .entry .hw-placeholder {
+    display: none;
+  }
+
+  .entry .hw-actual {
+    display: initial;
+    /*font-style: italic;
+            font-weight: bold;*/
+    text-decoration: underline;
+  }
+
+  .orth+.sense {
+    display: inline-block;
+  }
+
+  .orth+.sense:before {
+    content: "\00a0\279c\00a0";
+  }
+
+  .abbr-is {
+    font-style: italic;
+  }
 }
 
 .dict-nav {

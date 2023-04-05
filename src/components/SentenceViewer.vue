@@ -1,6 +1,6 @@
 <script>
-import fs from "fs";
-import path from "path";
+// import fs from "fs";
+// import path from "path";
 import { computed, ref } from 'vue'
 import CustomScrollbar from 'custom-vue-scrollbar';
 import 'custom-vue-scrollbar/dist/style.css';
@@ -51,17 +51,25 @@ export default {
         let lemma = greynir.lemma;
         let pos = greynir.pos.replaceAll('"', "");
         let lemmaPos = `${lemma}+${pos}`;
-        let f = path.join("C:/Dev/droopy/greynir/jimny_words", `${lemmaPos}.json`);
-        try {
-          // console.log(`read file: ${f}`)
-          const jsonString = fs.readFileSync(f);
-          let html = JSON.parse(jsonString);
-          d.set(lemmaPos, html);
-          // console.log(`dict ${lemmaPos}: ${JSON.stringify(html)}`);
-        } catch (err) {
-          console.error(`SentenceViewer: ${err}`);
-          d.set(lemmaPos, { dict: `File not found: ${lemmaPos}.json` });
+        let html;
+        let getDict=true;
+        if (getDict /*lemmaPos == "hleypa+so"*/) {
+          html = window.electronAPI.getDict(lemmaPos);
+        } else {
+          html = { dict: `(2) File not found: ${lemmaPos}.json` }
         }
+        d.set(lemmaPos, html);
+        // let f = path.join("C:/Dev/droopy/greynir/jimny_words", `${lemmaPos}.json`);
+        // try {
+        //   // console.log(`read file: ${f}`)
+        //   const jsonString = fs.readFileSync(f);
+        //   let html = JSON.parse(jsonString);
+        //   d.set(lemmaPos, html);
+        //   // console.log(`dict ${lemmaPos}: ${JSON.stringify(html)}`);
+        // } catch (err) {
+        //   console.error(`SentenceViewer: ${err}`);
+        //   d.set(lemmaPos, { dict: `File not found: ${lemmaPos}.json` });
+        // }
       }
       return [...d]; // [ [lemma+pos, dict], ..., [lemma+pos, dict] ]
     });

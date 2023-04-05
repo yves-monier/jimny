@@ -1,7 +1,13 @@
 module.exports = {
     pluginOptions: {
         electronBuilder: {
-            nodeIntegration: true
+            // nodeIntegration: true,
+            preload: "src/preload.js",
+            builderOptions: {
+                extraResources: ['src', 'src/res/'],
+            },
+            // mainProcessFile: "src/background.js",
+            // rendererProcessFile: "src/main.js",
         }
     },
     configureWebpack: {

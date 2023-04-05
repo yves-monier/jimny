@@ -1,11 +1,16 @@
 <script>
-import fs from "fs";
-// import { app } from "@electron/remote";
+// import fs from "fs";
 // import { computed, ref } from "vue";
 // import FilesViewer from "./components/FilesViewer";
 import Search from "./components/Search";
 import SentenceViewer from "./components/SentenceViewer";
+import SentenceReader from "./components/SentenceReader";
 import { computed, reactive } from "vue";
+
+import sentences from "../jimny_sentences.json";
+
+// import { BrowserWindow } from 'electron'
+
 
 // const formatSize = (size) => {
 //   var i = Math.floor(Math.log(size) / Math.log(1024));
@@ -21,6 +26,7 @@ export default {
   components: {
     Search,
     SentenceViewer,
+    SentenceReader,
     // FilesViewer,
   },
   setup() {
@@ -75,6 +81,18 @@ export default {
     //   filteredFiles,
     // };
 
+    const game = reactive({ "mode": "grammar" }); // or "audio"
+
+    const onToggleMode = (/*ev, m*/) => {
+      if (game.mode == "grammar") {
+        game.mode = "audio"
+        window.electronAPI.setSize(500, 100)
+      } else {
+        game.mode = "grammar"
+        window.electronAPI.setSize(800, 600)
+      }
+    };
+
     const flags = reactive({ "FR": true, "UK": true });
 
     const onToggleFlag = (ev, lang) => {
@@ -90,21 +108,21 @@ export default {
       }
     };
 
-    let sentences = [];
+    // let sentences = [];
     let total = 0;
     try {
-      const jsonString = fs.readFileSync("C:/Dev/droopy/greynir/jimny_sentences.json");
-      sentences = JSON.parse(jsonString);
+      // const jsonString = fs.readFileSync("C:/Dev/droopy/greynir/jimny_sentences.json");
+      // sentences = JSON.parse(jsonString);
       total = sentences.length;
     } catch (err) {
       console.log(err);
     }
 
-    const state = reactive({
+    const stateViewer = reactive({
       total,
       index: 0,
       sentence: computed(
-        () => { return sentences[state.index] }
+        () => { return sentences[stateViewer.index] }
       ),
     });
 
@@ -134,26 +152,26 @@ export default {
     const doNextSentence = () => {
       let foundNext = false;
       while (!foundNext) {
-        state.index = state.index + 1;
-        if (state.index == total) {
-          state.index = 0;
+        stateViewer.index = stateViewer.index + 1;
+        if (stateViewer.index == total) {
+          stateViewer.index = 0;
         }
         foundNext = true;
         if (flags.UK) {
-          if (!state.sentence.english) {
+          if (!stateViewer.sentence.english) {
             foundNext = false
           }
         } else {
-          if (state.sentence.english) {
+          if (stateViewer.sentence.english) {
             foundNext = false
           }
         }
         if (flags.FR) {
-          if (!state.sentence.french) {
+          if (!stateViewer.sentence.french) {
             foundNext = false
           }
         } else {
-          if (state.sentence.french) {
+          if (stateViewer.sentence.french) {
             foundNext = false
           }
         }
@@ -176,7 +194,7 @@ export default {
     const onSelectSentence = (sentence) => {
       for (let ii = 0; ii < sentences.length; ii++) {
         if (sentences[ii].id == sentence.id) {
-          state.index = ii;
+          stateViewer.index = ii;
           doStartTimeout();
           break;
         }
@@ -185,7 +203,7 @@ export default {
 
     doStartTimeout();
 
-    return { sentences, state, onStopTimeout, onStartTimeout, onSelectSentence, onNextSentence, flags, onToggleFlag };
+    return { game, sentences, stateViewer, onToggleMode, onStopTimeout, onStartTimeout, onSelectSentence, onNextSentence, flags, onToggleFlag };
   },
 };
 </script>
@@ -193,6 +211,12 @@ export default {
 <template>
   <header>
     <div class="toolbar">
+      <div class="mode">
+        <button :class="['toggle', game.mode == 'grammar' ? 'toggle-active' : '']"
+          @click="onToggleMode()">Grammar</button>
+        <button :class="['toggle', game.mode == 'audio' ? 'toggle-active' : '']"
+          @click="onToggleMode()">Audio</button>
+      </div>
       <div class="flags">
         <div :class="['flag', 'flag-FR', !flags['FR'] && 'flag-off']" @click="onToggleFlag($event, 'FR')"></div>
         <div :class="['flag', 'flag-UK', !flags['UK'] && 'flag-off']" @click="onToggleFlag($event, 'UK')"></div>
@@ -200,11 +224,12 @@ export default {
       <div class="actions">
         <div class="pause"></div>
       </div>
-      <Search :sentences="sentences" @select-sentence="onSelectSentence" />
+      <Search v-if="game.mode == 'grammar'" :sentences="sentences" @select-sentence="onSelectSentence" />
     </div>
   </header>
-  <SentenceViewer @stop-timeout="onStopTimeout" @start-timeout="onStartTimeout" @next-sentence="onNextSentence"
-    :viewed="state" />
+  <SentenceViewer v-if="game.mode == 'grammar'" @stop-timeout="onStopTimeout" @start-timeout="onStartTimeout"
+    @next-sentence="onNextSentence" :viewed="stateViewer" />
+  <SentenceReader v-if="game.mode == 'audio'" />
 </template>
 
 <style lang="scss">
@@ -213,6 +238,12 @@ export default {
 }
 
 header {}
+
+.toggle {}
+
+.toggle-active {
+  background-color: green;
+}
 
 .flag {
   width: 24px;

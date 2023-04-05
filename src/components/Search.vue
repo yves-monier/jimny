@@ -19,7 +19,6 @@
         </div>
     </div>
 </template>
-
 <script>
 import { reactive, watch } from 'vue'
 

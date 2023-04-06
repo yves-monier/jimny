@@ -1,16 +1,9 @@
 <script>
-// import fs from "fs";
 // import { computed, ref } from "vue";
-// import FilesViewer from "./components/FilesViewer";
 import Search from "./components/Search";
 import SentenceViewer from "./components/SentenceViewer";
 import SentenceReader from "./components/SentenceReader";
 import { computed, reactive } from "vue";
-
-import sentences from "../jimny_sentences.json";
-
-// import { BrowserWindow } from 'electron'
-
 
 // const formatSize = (size) => {
 //   var i = Math.floor(Math.log(size) / Math.log(1024));
@@ -27,7 +20,6 @@ export default {
     Search,
     SentenceViewer,
     SentenceReader,
-    // FilesViewer,
   },
   setup() {
     // const path = ref(app.getAppPath());
@@ -108,11 +100,12 @@ export default {
       }
     };
 
-    // let sentences = [];
+    let sentences = [];
     let total = 0;
     try {
       // const jsonString = fs.readFileSync("C:/Dev/droopy/greynir/jimny_sentences.json");
       // sentences = JSON.parse(jsonString);
+      sentences = window.electronAPI.getSentences();
       total = sentences.length;
     } catch (err) {
       console.log(err);

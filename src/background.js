@@ -16,7 +16,17 @@ protocol.registerSchemesAsPrivileged([
 ]);
 
 async function createWindow() {
- 
+
+  ipcMain.on("get-sentences", (event) => {
+    try {
+      const jsonString = fs.readFileSync("C:/Dev/droopy/greynir/jimny_sentences.json");
+      let sentences = JSON.parse(jsonString);
+      event.returnValue = sentences;
+    } catch (err) {
+      event.returnValue = [];
+    }
+  });
+
   ipcMain.on("get-dict", (event, lemmaPos) => {
     let f = path.join("C:/Dev/droopy/greynir/jimny_words", `${lemmaPos}.json`);
     try {

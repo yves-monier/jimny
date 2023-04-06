@@ -85,7 +85,7 @@ export default {
       }
     };
 
-    const flags = reactive({ "FR": true, "UK": true });
+    const flags = reactive({ FR: true, UK: true, audio: true });
 
     const onToggleFlag = (ev, lang) => {
       flags[lang] = !flags[lang];
@@ -143,11 +143,19 @@ export default {
     };
 
     const doNextSentence = () => {
+      let current = stateViewer.index;
+      let rewound = false;
       let foundNext = false;
       while (!foundNext) {
         stateViewer.index = stateViewer.index + 1;
         if (stateViewer.index == total) {
-          stateViewer.index = 0;
+          if (!rewound) {
+            stateViewer.index = 0;
+            rewound = true;
+          } else {
+            stateViewer.index = current;
+            return;
+          }
         }
         foundNext = true;
         if (flags.UK) {
@@ -165,6 +173,15 @@ export default {
           }
         } else {
           if (stateViewer.sentence.french) {
+            foundNext = false
+          }
+        }
+        if (flags.audio) {
+          if (!stateViewer.sentence.audio) {
+            foundNext = false
+          }
+        } else {
+          if (stateViewer.sentence.audio) {
             foundNext = false
           }
         }
@@ -207,12 +224,12 @@ export default {
       <div class="mode">
         <button :class="['toggle', game.mode == 'grammar' ? 'toggle-active' : '']"
           @click="onToggleMode()">Grammar</button>
-        <button :class="['toggle', game.mode == 'audio' ? 'toggle-active' : '']"
-          @click="onToggleMode()">Audio</button>
+        <button :class="['toggle', game.mode == 'audio' ? 'toggle-active' : '']" @click="onToggleMode()">Audio</button>
       </div>
       <div class="flags">
         <div :class="['flag', 'flag-FR', !flags['FR'] && 'flag-off']" @click="onToggleFlag($event, 'FR')"></div>
         <div :class="['flag', 'flag-UK', !flags['UK'] && 'flag-off']" @click="onToggleFlag($event, 'UK')"></div>
+        <div :class="['flag', 'flag-audio', !flags['audio'] && 'flag-off']" @click="onToggleFlag($event, 'audio')"></div>
       </div>
       <div class="actions">
         <div class="pause"></div>
@@ -250,6 +267,10 @@ header {}
 
 .flag-UK {
   background-image: url("./assets/flags/flag_UK.jpg");
+}
+
+.flag-audio {
+  background-image: url("./assets/flags/flag_audio.jpg");
 }
 
 .flag-off {

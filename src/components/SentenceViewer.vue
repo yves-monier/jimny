@@ -46,13 +46,15 @@ export default {
     const current = ref(-1);
 
     const dict = computed(() => {
+      if (!props.viewed.sentence.greynir) return undefined;
+
       let d = new Map();
       for (let greynir of props.viewed.sentence.greynir) {
         let lemma = greynir.lemma;
         let pos = greynir.pos.replaceAll('"', "");
         let lemmaPos = `${lemma}+${pos}`;
         let html;
-        let getDict=true;
+        let getDict = true;
         if (getDict /*lemmaPos == "hleypa+so"*/) {
           html = window.electronAPI.getDict(lemmaPos);
         } else {
@@ -83,13 +85,16 @@ export default {
   <div class="sentence" @mouseenter="$emit('stop-timeout')" @mouseleave="$emit('start-timeout')">
     <header>{{ 1 + viewed.index }} / {{ viewed.total }} <button @click="$emit('next-sentence')">next</button></header>
     <div class="texts">
-      <div class="source-text icelandic">{{ viewed.sentence.icelandic }}</div>
+      <div class="source-text icelandic">
+        {{ viewed.sentence.icelandic }}
+        <button v-if="viewed.sentence.audio" class="audio"></button>
+      </div>
       <div class="target-texts">
         <div v-if="viewed.sentence.english" class="english">{{ viewed.sentence.english }}</div>
         <div v-if="viewed.sentence.french" class="french">{{ viewed.sentence.french }}</div>
       </div>
     </div>
-    <div class="greynir-analysis">
+    <div v-if="viewed.sentence.greynir" class="greynir-analysis">
       <div v-for="(greynir, index) in viewed.sentence.greynir" :key="`greynir-${index}`"
         :class="['greynir-word', (index == current) && 'current-greynir-word']" @mouseenter="onGreynirEnter(index)"
         @mouseleave="
@@ -97,7 +102,7 @@ export default {
         <span class="greynir-lemma">{{ greynir.lemma }}</span><span class="greynir-pos">{{ greynir.pos }}</span>
       </div>
     </div>
-    <div class="dict">
+    <div v-if="dict" class="dict">
       <div v-for="(entry, index) in dict" :key="index" ref="dictElements"
         :class="['dict-entry', (index == current) && 'current-dict-entry']" @mouseenter="onDictEnter(index)" @mouseleave="
           onDictLeave(index)">
@@ -160,6 +165,13 @@ header {
 
 .icelandic {
   background-image: url("../assets/flags/flag_IS.jpg");
+}
+
+.audio {
+  width: 24px;
+  height: 16px;
+  background-size: cover;
+  background-image: url("../assets/flags/flag_audio.jpg");
 }
 
 .french {

@@ -19,8 +19,11 @@ async function createWindow() {
 
   ipcMain.on("get-sentences", (event) => {
     try {
-      const jsonString = fs.readFileSync("C:/Dev/droopy/greynir/jimny_sentences.json");
-      let sentences = JSON.parse(jsonString);
+      let json = fs.readFileSync("C:/Dev/droopy/greynir/jimny_sentences.json");
+      let sentences = JSON.parse(json);
+      json = fs.readFileSync("C:/Dev/jimny/jimny_sentences_audio.json");
+      let sentencesAudio = JSON.parse(json);
+      sentences.push(...sentencesAudio);
       event.returnValue = sentences;
     } catch (err) {
       event.returnValue = [];

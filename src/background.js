@@ -41,6 +41,17 @@ async function createWindow() {
     }
   });
 
+  ipcMain.on("get-sound-data-uri", (event, sound) => {
+    let f = path.join("C:/Data/Islandais/samromur", sound);
+    try {
+      const data = fs.readFileSync(f).toString("base64");
+      const dataUri = `data:audio/flac;base64,${data}`; 
+      event.returnValue = dataUri;
+    } catch (err) {
+      event.returnValue = "";
+    }
+  });
+
   ipcMain.on("set-size", (event, w, h) => {
     const webContents = event.sender;
     const win = BrowserWindow.fromWebContents(webContents);
@@ -59,6 +70,7 @@ async function createWindow() {
       // /* YM */ enableRemoteModule: false,
       // /* YM */ preload: path.resolve(path.join(__dirname, "preload.js")),
       preload: path.join(__dirname, "preload.js"),
+      webSecurity: false
     }
   });
 

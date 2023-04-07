@@ -18,6 +18,31 @@ export default {
   // },
   setup(props) {
     let dictElements = ref(null);
+    let audioElement = ref(null);
+    let sourceElement = ref(null);
+
+    // const player = ref("");
+
+    const onListen = () => {
+      const dataUri = window.electronAPI.getSoundDataUri(props.viewed.sentence.audio);
+      let source = document.createElement('source');
+      source.src = dataUri;
+      // let audio = new Audio("file:///C:/Data/Islandais/samromur/test/000029/000029-0000194.flac");
+      let audio = new Audio();
+      // audio.oncanplay = function () {
+      //   audio.play();
+      // };
+      audio.appendChild(source);
+      audio.play();
+      // setTimeout(() => { 
+      //   audio.play(); 
+      // }, 1000);
+      // document.body.appendChild(audio);
+      // sourceElement.value.src = dataUri;
+      // audioElement.value.play();
+      // const html = `<audio id="the-player" controls="controls" autobuffer="autobuffer" src=${dataUri} />`
+      // player.value = html;
+    };
 
     const onGreynirEnter = (index) => {
       // console.log(`onGreynirEnter: ${index}`)
@@ -76,7 +101,7 @@ export default {
       return [...d]; // [ [lemma+pos, dict], ..., [lemma+pos, dict] ]
     });
 
-    return { dict, current, onGreynirEnter, onGreynirLeave, onDictEnter, onDictLeave, onDictNav, dictElements };
+    return { dict, current, onListen, onGreynirEnter, onGreynirLeave, onDictEnter, onDictLeave, onDictNav, dictElements, audioElement, sourceElement /*, player*/ };
   },
 };
 </script>
@@ -87,7 +112,12 @@ export default {
     <div class="texts">
       <div class="source-text icelandic">
         {{ viewed.sentence.icelandic }}
-        <button v-if="viewed.sentence.audio" class="audio"></button>
+        <button v-if="viewed.sentence.audio" class="audio" @click="onListen"></button>
+        <!-- div class="player" v-html="player"></div -->
+        <!-- audio v-if="viewed.sentence.audio" ref="audioElement" controls="controls"
+              autobuffer="autobuffer">
+              <source ref="sourceElement" src="" />
+            </audio -->
       </div>
       <div class="target-texts">
         <div v-if="viewed.sentence.english" class="english">{{ viewed.sentence.english }}</div>

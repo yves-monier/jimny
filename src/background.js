@@ -3,12 +3,15 @@
 import { app, protocol, BrowserWindow, ipcMain } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
+
 const isDevelopment = process.env.NODE_ENV !== "production";
 
 const path = require("path");
 const fs = require("fs");
 
 require("@electron/remote/main").initialize();
+
+const helpers = require("@/services/helpers.js");
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -24,6 +27,7 @@ async function createWindow() {
       json = fs.readFileSync("C:/Dev/jimny/jimny_sentences_audio.json");
       let sentencesAudio = JSON.parse(json);
       sentences.push(...sentencesAudio);
+      helpers.shuffleArray(sentences);
       event.returnValue = sentences;
     } catch (err) {
       event.returnValue = [];
@@ -45,7 +49,7 @@ async function createWindow() {
     let f = path.join("C:/Data/Islandais/samromur", sound);
     try {
       const data = fs.readFileSync(f).toString("base64");
-      const dataUri = `data:audio/flac;base64,${data}`; 
+      const dataUri = `data:audio/flac;base64,${data}`;
       event.returnValue = dataUri;
     } catch (err) {
       event.returnValue = "";

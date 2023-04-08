@@ -1,12 +1,13 @@
 <script>
 // import fs from "fs";
 // import path from "path";
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import CustomScrollbar from 'custom-vue-scrollbar';
 import 'custom-vue-scrollbar/dist/style.css';
 
 export default {
   props: {
+    // total, index, sentence
     viewed: { type: Object, default: () => { } },
   },
   components: { CustomScrollbar },
@@ -101,6 +102,10 @@ export default {
       return [...d]; // [ [lemma+pos, dict], ..., [lemma+pos, dict] ]
     });
 
+    watch(() => props.viewed.index, (newValue, oldValue) => {
+      console.log(`props.view has been updated: ${oldValue} => ${newValue}`);
+    });
+
     return { dict, current, onListen, onGreynirEnter, onGreynirLeave, onDictEnter, onDictLeave, onDictNav, dictElements, audioElement, sourceElement /*, player*/ };
   },
 };
@@ -115,9 +120,9 @@ export default {
         <button v-if="viewed.sentence.audio" class="audio" @click="onListen"></button>
         <!-- div class="player" v-html="player"></div -->
         <!-- audio v-if="viewed.sentence.audio" ref="audioElement" controls="controls"
-              autobuffer="autobuffer">
-              <source ref="sourceElement" src="" />
-            </audio -->
+                  autobuffer="autobuffer">
+                  <source ref="sourceElement" src="" />
+                </audio -->
       </div>
       <div class="target-texts">
         <div v-if="viewed.sentence.english" class="english">{{ viewed.sentence.english }}</div>

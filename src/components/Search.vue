@@ -1,6 +1,6 @@
 <template>
     <!-- div class="form-group mt-4 mb-2 search" -->
-    <div>
+    <div class="search">
         <div class="search-input">
             <input type="text" id="leita" name="leita" :placeholder="`Leita (${sentences.length})`" v-model="store.input" />
             <!-- div v-if="search.result && search.result.length > 0" class="icon-close" @click="onCloseSearch"></div -->

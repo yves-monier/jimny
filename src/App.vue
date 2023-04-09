@@ -2,7 +2,6 @@
 // import { computed, ref } from "vue";
 import Search from "./components/Search";
 import SentenceViewer from "./components/SentenceViewer";
-import SentenceReader from "./components/SentenceReader";
 import { computed, reactive } from "vue";
 
 // const formatSize = (size) => {
@@ -19,7 +18,6 @@ export default {
   components: {
     Search,
     SentenceViewer,
-    SentenceReader,
   },
   setup() {
     // const path = ref(app.getAppPath());
@@ -73,30 +71,22 @@ export default {
     //   filteredFiles,
     // };
 
-    const game = reactive({ "mode": "grammar" }); // or "audio"
-
-    const onToggleMode = (/*ev, m*/) => {
-      if (game.mode == "grammar") {
-        game.mode = "audio"
-        window.electronAPI.setSize(500, 100)
-      } else {
-        game.mode = "grammar"
-        window.electronAPI.setSize(800, 600)
-      }
-    };
-
-    const flags = reactive({ FR: true, UK: true, audio: true });
+    const flags = reactive({ FR: "any", UK: "any", audio: "any" });
 
     const onToggleFlag = (ev, lang) => {
-      flags[lang] = !flags[lang];
-      let hasFlagOn = false;
-      for (const [/*lang*/, b] of Object.entries(flags)) {
-        hasFlagOn = hasFlagOn || b;
+      let prev = flags[lang];
+      if (flags[lang] === "any") {
+        flags[lang] = "on";
+      } else if (flags[lang] === "on") {
+        flags[lang] = "off";
+      } else /* === "off" */ {
+        flags[lang] = "any";
       }
-      if (hasFlagOn) {
+      let atLeastOneNotOff = Object.entries(flags).find(e => e[1] !== "off");
+      if (atLeastOneNotOff) {
         doStartTimeout();
       } else {
-        flags[lang] = !flags[lang];
+        flags[lang] = prev;
       }
     };
 
@@ -158,29 +148,29 @@ export default {
           }
         }
         foundNext = true;
-        if (flags.UK) {
+        if (flags.UK == "on") {
           if (!stateViewer.sentence.english) {
             foundNext = false
           }
-        } else {
+        } else if (flags.UK == "off") {
           if (stateViewer.sentence.english) {
             foundNext = false
           }
         }
-        if (flags.FR) {
+        if (flags.FR == "on") {
           if (!stateViewer.sentence.french) {
             foundNext = false
           }
-        } else {
+        } else if (flags.FR == "off") {
           if (stateViewer.sentence.french) {
             foundNext = false
           }
         }
-        if (flags.audio) {
+        if (flags.audio == "on") {
           if (!stateViewer.sentence.audio) {
             foundNext = false
           }
-        } else {
+        } else if (flags.audio == "off") {
           if (stateViewer.sentence.audio) {
             foundNext = false
           }
@@ -213,7 +203,7 @@ export default {
 
     doStartTimeout();
 
-    return { game, sentences, stateViewer, onToggleMode, onStopTimeout, onStartTimeout, onSelectSentence, onNextSentence, flags, onToggleFlag };
+    return { sentences, stateViewer, onStopTimeout, onStartTimeout, onSelectSentence, onNextSentence, flags, onToggleFlag };
   },
 };
 </script>
@@ -221,25 +211,19 @@ export default {
 <template>
   <header>
     <div class="toolbar">
-      <div class="mode">
-        <button :class="['toggle', game.mode == 'grammar' ? 'toggle-active' : '']"
-          @click="onToggleMode()">Grammar</button>
-        <button :class="['toggle', game.mode == 'audio' ? 'toggle-active' : '']" @click="onToggleMode()">Audio</button>
-      </div>
       <div class="flags">
-        <div :class="['flag', 'flag-FR', !flags['FR'] && 'flag-off']" @click="onToggleFlag($event, 'FR')"></div>
-        <div :class="['flag', 'flag-UK', !flags['UK'] && 'flag-off']" @click="onToggleFlag($event, 'UK')"></div>
-        <div :class="['flag', 'flag-audio', !flags['audio'] && 'flag-off']" @click="onToggleFlag($event, 'audio')"></div>
+        <div :class="['flag', 'flag-FR', `flag-${flags['FR']}`]" @click="onToggleFlag($event, 'FR')"></div>
+        <div :class="['flag', 'flag-UK', `flag-${flags['UK']}`]" @click="onToggleFlag($event, 'UK')"></div>
+        <div :class="['flag', 'flag-audio', `flag-${flags['audio']}`]" @click="onToggleFlag($event, 'audio')"></div>
       </div>
       <div class="actions">
         <div class="pause"></div>
       </div>
-      <Search v-if="game.mode == 'grammar'" :sentences="sentences" @select-sentence="onSelectSentence" />
+      <Search class="search" :sentences="sentences" @select-sentence="onSelectSentence" />
     </div>
   </header>
-  <SentenceViewer v-if="game.mode == 'grammar'" @stop-timeout="onStopTimeout" @start-timeout="onStartTimeout"
-    @next-sentence="onNextSentence" :viewed="stateViewer" />
-  <SentenceReader v-if="game.mode == 'audio'" />
+  <SentenceViewer @stop-timeout="onStopTimeout" @start-timeout="onStartTimeout" @next-sentence="onNextSentence"
+    :viewed="stateViewer" />
 </template>
 
 <style lang="scss">
@@ -249,16 +233,19 @@ export default {
 
 header {}
 
-.toggle {}
+.toolbar {
+  display: flex;
+}
 
-.toggle-active {
-  background-color: green;
+.flags {
+  display: flex;
 }
 
 .flag {
   width: 24px;
   height: 16px;
   background-size: cover;
+  border: 3px solid transparent;
 }
 
 .flag-FR {
@@ -273,7 +260,23 @@ header {}
   background-image: url("./assets/flags/flag_audio.jpg");
 }
 
+.flag-any {
+  border-color: white;
+}
+
+.flag-on {
+  border-color: green;
+}
+
 .flag-off {
-  opacity: 0.5;
+  border-color: red;
+}
+
+.actions {
+  margin-left: 0.5rem;
+}
+
+.search {
+  margin-left: 0.5rem;
 }
 </style>

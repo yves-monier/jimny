@@ -129,12 +129,13 @@ export default {
       <div class="source-text icelandic">
         {{ viewed.sentence.icelandic }}
         <button v-if="viewed.sentence.audio" class="audio" @click="onListen"></button>
-        <input v-if="viewed.sentence.audio" type="checkbox" id="autoplay" name="autoplay"
-          :checked="autoplay ? 'checked' : null" @click="onToggleAutoplay">
-        <label for="autoPlay">autoplay</label>
-        <audio v-if="viewed.sentence.audio" ref="audioElement" autobuffer="autobuffer">
-          <source ref="sourceElement" src="" />
-        </audio>
+        <span v-if="viewed.sentence.audio" class="audio-controls">
+          <input type="checkbox" id="autoplay" name="autoplay" :checked="autoplay ? 'checked' : null"
+            @click="onToggleAutoplay">
+          <label for="autoplay">autoplay</label>
+          <audio ref="audioElement" autobuffer="autobuffer">
+            <source ref="sourceElement" src="" />
+          </audio></span>
       </div>
       <div v-if="viewed.sentence.english || viewed.sentence.french" class="target-texts">
         <div v-if="viewed.sentence.english" class="english">{{ viewed.sentence.english }}</div>

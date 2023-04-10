@@ -13,6 +13,10 @@ https://www.electronjs.org/docs/latest/tutorial/ipc
 https://stackoverflow.com/questions/44391448/electron-require-is-not-defined
 https://stricker.digital/posts/electron-with-vue-and-webpack/
 
+## Misc.
+
+https://www.electronjs.org/docs/latest/tutorial/represented-file
+https://stackoverflow.com/questions/39835282/set-browserwindow-always-on-top-even-other-app-is-in-fullscreen-electron-mac
 
 ## Project setup
 ```

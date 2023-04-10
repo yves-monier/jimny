@@ -31,16 +31,18 @@ export default {
     };
 
     const onListen = () => {
-      const dataUri = window.electronAPI.getSoundDataUri(props.viewed.sentence.audio);
-      /*
-      let source = document.createElement('source');
-      source.src = dataUri;
-      let audio = new Audio();
-      audio.appendChild(source);
-      audio.play();
-*/
-      sourceElement.value.src = dataUri;
-      audioElement.value.load();
+      if (!sourceElement.value.src || !sourceElement.value.src.startsWith("data")) {
+        const dataUri = window.electronAPI.getSoundDataUri(props.viewed.sentence.audio);
+        /*
+        let source = document.createElement('source');
+        source.src = dataUri;
+        let audio = new Audio();
+        audio.appendChild(source);
+        audio.play();
+        */
+        sourceElement.value.src = dataUri;
+        audioElement.value.load();
+      }
       audioElement.value.play();
     };
 
@@ -103,6 +105,16 @@ export default {
 
     watch(() => props.viewed.index, (newValue, oldValue) => {
       console.log(`props.view has been updated: ${oldValue} => ${newValue}`);
+      if (sourceElement.value) {
+        if (autoplay.value) {
+          const dataUri = window.electronAPI.getSoundDataUri(props.viewed.sentence.audio);
+          sourceElement.value.src = dataUri;
+          audioElement.value.load();
+          audioElement.value.play();
+        } else {
+          sourceElement.value.src = "";
+        }
+      }
     });
 
     return { dict, current, autoplay, onToggleAutoplay, onListen, onGreynirEnter, onGreynirLeave, onDictEnter, onDictLeave, onDictNav, dictElements, audioElement, sourceElement };
@@ -113,12 +125,12 @@ export default {
 <template>
   <div class="sentence" @mouseenter="$emit('stop-timeout')" @mouseleave="$emit('start-timeout')">
     <header>{{ 1 + viewed.index }} / {{ viewed.total }} <button @click="$emit('next-sentence')">next</button></header>
-    <div class="texts">
+    <div :class="['texts', viewed.sentence.english || viewed.sentence.french ? 'with-target' : 'without-target']">
       <div class="source-text icelandic">
         {{ viewed.sentence.icelandic }}
         <button v-if="viewed.sentence.audio" class="audio" @click="onListen"></button>
-        <input type="checkbox" id="autoplay" name="autoplay" :checked="autoplay ? 'true' : 'false'"
-          @click="onToggleAutoplay">
+        <input v-if="viewed.sentence.audio" type="checkbox" id="autoplay" name="autoplay"
+          :checked="autoplay ? 'checked' : null" @click="onToggleAutoplay">
         <label for="autoPlay">autoplay</label>
         <audio v-if="viewed.sentence.audio" ref="audioElement" autobuffer="autobuffer">
           <source ref="sourceElement" src="" />
@@ -179,7 +191,7 @@ header {
   align-items: flex-start;
 }
 
-.source-text {
+.texts.with-target .source-text {
   max-width: 50%;
   flex: 0 0 auto;
 }

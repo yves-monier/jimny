@@ -24,6 +24,12 @@ export default {
     let audioElement = ref(null);
     let sourceElement = ref(null);
 
+    const autoplay = ref(false);
+
+    const onToggleAutoplay = () => {
+      autoplay.value = !autoplay.value;
+    };
+
     const onListen = () => {
       const dataUri = window.electronAPI.getSoundDataUri(props.viewed.sentence.audio);
       /*
@@ -99,7 +105,7 @@ export default {
       console.log(`props.view has been updated: ${oldValue} => ${newValue}`);
     });
 
-    return { dict, current, onListen, onGreynirEnter, onGreynirLeave, onDictEnter, onDictLeave, onDictNav, dictElements, audioElement, sourceElement };
+    return { dict, current, autoplay, onToggleAutoplay, onListen, onGreynirEnter, onGreynirLeave, onDictEnter, onDictLeave, onDictNav, dictElements, audioElement, sourceElement };
   },
 };
 </script>
@@ -111,6 +117,9 @@ export default {
       <div class="source-text icelandic">
         {{ viewed.sentence.icelandic }}
         <button v-if="viewed.sentence.audio" class="audio" @click="onListen"></button>
+        <input type="checkbox" id="autoplay" name="autoplay" :checked="autoplay ? 'true' : 'false'"
+          @click="onToggleAutoplay">
+        <label for="autoPlay">autoplay</label>
         <audio v-if="viewed.sentence.audio" ref="audioElement" autobuffer="autobuffer">
           <source ref="sourceElement" src="" />
         </audio>

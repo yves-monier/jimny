@@ -75,7 +75,7 @@ export default {
     const dict = computed(() => {
       if (!props.viewed.sentence.greynir) return undefined;
 
-      let d = new Map();
+      let d = [];
       for (let greynir of props.viewed.sentence.greynir) {
         let lemma = greynir.lemma;
         let pos = greynir.pos.replaceAll('"', "");
@@ -87,20 +87,10 @@ export default {
         } else {
           html = { dict: `(2) File not found: ${lemmaPos}.json` }
         }
-        d.set(lemmaPos, html);
-        // let f = path.join("C:/Dev/droopy/greynir/jimny_words", `${lemmaPos}.json`);
-        // try {
-        //   // console.log(`read file: ${f}`)
-        //   const jsonString = fs.readFileSync(f);
-        //   let html = JSON.parse(jsonString);
-        //   d.set(lemmaPos, html);
-        //   // console.log(`dict ${lemmaPos}: ${JSON.stringify(html)}`);
-        // } catch (err) {
-        //   console.error(`SentenceViewer: ${err}`);
-        //   d.set(lemmaPos, { dict: `File not found: ${lemmaPos}.json` });
-        // }
+        d.push([lemmaPos, html]);
       }
-      return [...d]; // [ [lemma+pos, dict], ..., [lemma+pos, dict] ]
+      // return [...d]; // [ [lemma+pos, dict], ..., [lemma+pos, dict] ]
+      return d; // [ [lemma+pos, dict], ..., [lemma+pos, dict] ]
     });
 
     watch(() => props.viewed.index, (newValue, oldValue) => {

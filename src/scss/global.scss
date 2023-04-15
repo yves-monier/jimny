@@ -1,22 +1,28 @@
 @font-face {
     font-family: "Open Sans";
-    src: local("Open Sans"),
-     url(./fonts/OpenSans/OpenSans-Regular.ttf) format("truetype");
-  }
+    src        : local("Open Sans"),
+        url(./fonts/OpenSans/OpenSans-Regular.ttf) format("truetype");
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
 
 html,
 body {
-    font-family: "Open Sans", Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
+    font-family     : "Open Sans", Arial, sans-serif;
+    margin          : 0;
+    padding         : 0;
+    width           : 100%;
+    height          : 100%;
     background-color: white;
 }
 
 #app {
-    height: 100%;
-    width: 100%;
-    display: flex;
+    height        : 100%;
+    width         : 100%;
+    display       : flex;
     flex-direction: column;
 }

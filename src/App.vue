@@ -2,7 +2,8 @@
 // import { computed, ref } from "vue";
 import Search from "./components/Search";
 import SentenceViewer from "./components/SentenceViewer";
-import { computed, reactive } from "vue";
+import Settings from "./components/Settings";
+import { computed, reactive, ref } from "vue";
 
 // const formatSize = (size) => {
 //   var i = Math.floor(Math.log(size) / Math.log(1024));
@@ -18,6 +19,7 @@ export default {
   components: {
     Search,
     SentenceViewer,
+    Settings,
   },
   setup() {
     // const path = ref(app.getAppPath());
@@ -108,6 +110,16 @@ export default {
         () => { return sentences[stateViewer.index] }
       ),
     });
+
+    const settings = { sentencesFile: "", audioDir: "" };
+    const settingsVisible = ref(false);
+    const onSettings = () => {
+      settingsVisible.value = true; //!settingsVisible.value;
+    };
+    const onCloseSettings = (arg) => {
+      console.log(`onCloseSettings: ${JSON.stringify(arg)}`);
+      settingsVisible.value = false;
+    };
 
     let intervalId = undefined;
 
@@ -203,7 +215,7 @@ export default {
 
     doStartTimeout();
 
-    return { sentences, stateViewer, onStopTimeout, onStartTimeout, onSelectSentence, onNextSentence, flags, onToggleFlag };
+    return { sentences, stateViewer, settingsVisible, settings, onSettings, onCloseSettings, onStopTimeout, onStartTimeout, onSelectSentence, onNextSentence, flags, onToggleFlag };
   },
 };
 </script>
@@ -217,13 +229,15 @@ export default {
         <div :class="['flag', 'flag-audio', `flag-${flags['audio']}`]" @click="onToggleFlag($event, 'audio')"></div>
       </div>
       <div class="actions">
-        <div class="pause"></div>
+        <div class="action action-settings" @click="onSettings"></div>
+        <div class="action action-pause"></div>
       </div>
       <Search class="search" :sentences="sentences" @select-sentence="onSelectSentence" />
     </div>
   </header>
   <SentenceViewer @stop-timeout="onStopTimeout" @start-timeout="onStartTimeout" @next-sentence="onNextSentence"
     :viewed="stateViewer" />
+  <Settings v-if="settingsVisible" :settings="settings" @close="onCloseSettings" />
 </template>
 
 <style lang="scss">
@@ -237,13 +251,27 @@ header {}
   display: flex;
 }
 
+.action {
+  display: block;
+  text-indent: -9999px;
+  width: 24px;
+  height: 24px;
+  background-size: 20px 20px;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.action-settings {
+  background-image: url(./assets/settings.svg);
+}
+
 .flags {
   display: flex;
 }
 
 .flag {
-  width: 24px;
-  height: 16px;
+  width: 30px;
+  height: 22px;
   background-size: cover;
   border: 3px solid transparent;
 }

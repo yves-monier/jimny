@@ -4128,11 +4128,6 @@ electron-devtools-installer@^3.1.0:
     tslib "^2.1.0"
     unzip-crx-3 "^0.2.0"
 
-electron-is-dev@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/electron-is-dev/-/electron-is-dev-2.0.0.tgz#833487a069b8dad21425c67a19847d9064ab19bd"
-  integrity sha512-3X99K852Yoqu9AcW50qz3ibYBWY79/pBhlMCab8ToEWS48R0T9tyxRiQhwylE7zQdXrMnx2JKqUJyMPmt5FBqA==
-
 electron-osx-sign@^0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/electron-osx-sign/-/electron-osx-sign-0.5.0.tgz#fc258c5e896859904bbe3d01da06902c04b51c3a"
@@ -9981,6 +9976,11 @@ use@^3.1.0:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/use/-/use-3.1.1.tgz#d50c8cac79a19fbc20f2911f56eb973f4e10070f"
   integrity sha512-cwESVXlO3url9YWlFW/TA9cshCEhtu7IKJ/p5soJ/gGpj7vbvFrAY/eIioQ6Dw23KjZhYgiIo8HOs1nQ2vr/oQ==
+
+usemodal-vue3@^0.3.7:
+  version "0.3.7"
+  resolved "https://registry.yarnpkg.com/usemodal-vue3/-/usemodal-vue3-0.3.7.tgz#a280e0482e62dd9f34bfb13019f942c5124c297c"
+  integrity sha512-9WQC4UWDl7DFSuT6Q85TTEr1ZRvf5IIXb2TZcWg9uaF1dFa0tSkHhEw8/Pj3s43MLNy/uc/pMnZKLrscANuB9w==
 
 utf8-byte-length@^1.0.1:
   version "1.0.4"

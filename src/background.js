@@ -24,9 +24,9 @@ async function createWindow() {
     try {
       let json = fs.readFileSync("C:/Dev/droopy/greynir/jimny_sentences.json");
       let sentences = JSON.parse(json);
-      json = fs.readFileSync("C:/Dev/jimny/jimny_sentences_audio.json");
-      let sentencesAudio = JSON.parse(json);
-      sentences.push(...sentencesAudio);
+      // json = fs.readFileSync("C:/Dev/jimny/jimny_sentences_audio.json");
+      // let sentencesAudio = JSON.parse(json);
+      // sentences.push(...sentencesAudio);
       helpers.shuffleArray(sentences);
       event.returnValue = sentences;
     } catch (err) {

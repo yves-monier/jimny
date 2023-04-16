@@ -95,16 +95,22 @@ export default {
 
     watch(() => props.viewed.index, (newValue, oldValue) => {
       console.log(`props.view has been updated: ${oldValue} => ${newValue}`);
-      if (sourceElement.value) {
-        if (autoplay.value) {
-          const dataUri = window.electronAPI.getSoundDataUri(props.viewed.sentence.audio);
-          sourceElement.value.src = dataUri;
-          audioElement.value.load();
-          audioElement.value.play();
-        } else {
+      if (autoplay.value) {
+        if (props.viewed.sentence.audio) {
+          if (sourceElement.value) {
+            const dataUri = window.electronAPI.getSoundDataUri(props.viewed.sentence.audio);
+            sourceElement.value.src = dataUri;
+            audioElement.value.load();
+            audioElement.value.play();
+          } else {
+            console.log("Problem!");
+          }
+        }
+      } /*else {
+        if (sourceElement.value) {
           sourceElement.value.src = "";
         }
-      }
+      } */
     });
 
     return { dict, current, autoplay, onToggleAutoplay, onListen, onGreynirEnter, onGreynirLeave, onDictEnter, onDictLeave, onDictNav, dictElements, audioElement, sourceElement };
@@ -119,10 +125,11 @@ export default {
       <div class="source-text icelandic">
         {{ viewed.sentence.icelandic }}
         <button v-if="viewed.sentence.audio" class="audio" @click="onListen"></button>
-        <span v-if="viewed.sentence.audio" class="audio-controls">
-          <input type="checkbox" id="autoplay" name="autoplay" :checked="autoplay ? 'checked' : null"
-            @click="onToggleAutoplay">
-          <label for="autoplay">autoplay</label>
+        <span class="audio-controls">
+          <span v-if="viewed.sentence.audio" class="audio-controls-autoplay">
+            <input type="checkbox" id="autoplay" name="autoplay" :checked="autoplay ? 'checked' : null"
+              @click="onToggleAutoplay">
+            <label for="autoplay">autoplay</label></span>
           <audio ref="audioElement" autobuffer="autobuffer">
             <source ref="sourceElement" src="" />
           </audio></span>

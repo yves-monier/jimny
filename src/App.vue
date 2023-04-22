@@ -109,9 +109,10 @@ export default {
       sentence: computed(
         () => { return sentences[stateViewer.index] }
       ),
+      autoplay: true,
     });
 
-    const settings = { sentencesFile: "", audioDir: "" };
+    const settings = { autoplay: stateViewer.autoplay, sentencesFile: "C:\\Dev\\droopy\\greynir\\jimny_sentences.json", wordsFolder: "C:\\Dev\\droopy\\greynir\\jimny_words", audioFolder: "C:\\Data\\Islandais\\samromur", autobrowse: false, autobrowseDuration: 5 };
     const settingsVisible = ref(false);
     const onSettings = () => {
       settingsVisible.value = true; //!settingsVisible.value;

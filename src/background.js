@@ -1,6 +1,6 @@
 "use strict"
 
-import { app, protocol, BrowserWindow, ipcMain } from "electron";
+import { app, protocol, BrowserWindow, ipcMain, dialog } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
 
@@ -60,6 +60,17 @@ async function createWindow() {
     const webContents = event.sender;
     const win = BrowserWindow.fromWebContents(webContents);
     win.setSize(w, h);
+  });
+
+  ipcMain.handle('dialog:open-directory', async () => {
+    const { canceled, filePaths } = await dialog.showOpenDialog(win, {
+      properties: ['openDirectory']
+    });
+    if (canceled) {
+      return;
+    } else {
+      return filePaths[0];
+    }
   });
 
   // Create the browser window.

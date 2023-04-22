@@ -24,12 +24,6 @@ export default {
     let audioElement = ref(null);
     let sourceElement = ref(null);
 
-    const autoplay = ref(false);
-
-    const onToggleAutoplay = () => {
-      autoplay.value = !autoplay.value;
-    };
-
     const onListen = () => {
       if (!sourceElement.value.src || !sourceElement.value.src.startsWith("data")) {
         const dataUri = window.electronAPI.getSoundDataUri(props.viewed.sentence.audio);
@@ -95,7 +89,7 @@ export default {
 
     watch(() => props.viewed.index, (newValue, oldValue) => {
       console.log(`props.view has been updated: ${oldValue} => ${newValue}`);
-      if (autoplay.value) {
+      if (props.viewed.autoplay) {
         if (props.viewed.sentence.audio) {
           if (sourceElement.value) {
             const dataUri = window.electronAPI.getSoundDataUri(props.viewed.sentence.audio);
@@ -113,7 +107,7 @@ export default {
       } */
     });
 
-    return { dict, current, autoplay, onToggleAutoplay, onListen, onGreynirEnter, onGreynirLeave, onDictEnter, onDictLeave, onDictNav, dictElements, audioElement, sourceElement };
+    return { dict, current, onListen, onGreynirEnter, onGreynirLeave, onDictEnter, onDictLeave, onDictNav, dictElements, audioElement, sourceElement };
   },
 };
 </script>
@@ -126,10 +120,6 @@ export default {
         {{ viewed.sentence.icelandic }}
         <button v-if="viewed.sentence.audio" class="audio" @click="onListen"></button>
         <span class="audio-controls">
-          <span v-if="viewed.sentence.audio" class="audio-controls-autoplay">
-            <input type="checkbox" id="autoplay" name="autoplay" :checked="autoplay ? 'checked' : null"
-              @click="onToggleAutoplay">
-            <label for="autoplay">autoplay</label></span>
           <audio ref="audioElement" autobuffer="autobuffer">
             <source ref="sourceElement" src="" />
           </audio></span>

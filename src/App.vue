@@ -112,13 +112,20 @@ export default {
       autoplay: true,
     });
 
-    const settings = { autoplay: stateViewer.autoplay, sentencesFile: "C:\\Dev\\droopy\\greynir\\jimny_sentences.json", wordsFolder: "C:\\Dev\\droopy\\greynir\\jimny_words", audioFolder: "C:\\Data\\Islandais\\samromur", autobrowse: false, autobrowseDuration: 5 };
+    let settings = reactive({ autoplay: stateViewer.autoplay, sentencesFile: "C:\\Dev\\droopy\\greynir\\jimny_sentences.json", wordsFolder: "C:\\Dev\\droopy\\greynir\\jimny_words", audioFolder: "C:\\Data\\Islandais\\samromur", autobrowse: false, autobrowseDuration: 5 });
+
     const settingsVisible = ref(false);
     const onSettings = () => {
       settingsVisible.value = true; //!settingsVisible.value;
     };
-    const onCloseSettings = (arg) => {
-      console.log(`onCloseSettings: ${JSON.stringify(arg)}`);
+    const onCloseSettings = (newSettings) => {
+      console.log(`onCloseSettings: ${JSON.stringify(newSettings)}`);
+      if (newSettings) {
+        Object.keys(newSettings).forEach(k => {
+          settings[k] = newSettings[k];
+        });
+        stateViewer.autoplay = newSettings.autoplay;
+      }
       settingsVisible.value = false;
     };
 
@@ -132,16 +139,14 @@ export default {
       // console.log(`Stop timeout`)
     };
 
-    const useTimeout = false;
-
     const doStartTimeout = () => {
-      if (useTimeout) {
+      if (settings.autobrowse) {
         if (intervalId !== undefined) {
           clearInterval(intervalId);
         }
         intervalId = setInterval(() => {
           doNextSentence();
-        }, 10000)
+        }, 1000 * settings.autobrowseDuration);
       }
     };
 
@@ -197,11 +202,10 @@ export default {
     };
 
     const onNextSentence = () => {
-      if (useTimeout) {
+      if (settings.autobrowse) {
         doStartTimeout();
-      } else {
-        doNextSentence();
       }
+      doNextSentence();
     };
 
     const onSelectSentence = (sentence) => {
@@ -234,19 +238,22 @@ export default {
         <div class="action action-pause"></div>
       </div>
       <Search class="search" :sentences="sentences" @select-sentence="onSelectSentence" />
+      <div class="nav">{{ 1 + stateViewer.index }} / {{ stateViewer.total }} <button @click="onNextSentence">next</button>
+      </div>
     </div>
   </header>
-  <SentenceViewer @stop-timeout="onStopTimeout" @start-timeout="onStartTimeout" @next-sentence="onNextSentence"
-    :viewed="stateViewer" />
+  <SentenceViewer @stop-timeout="onStopTimeout" @start-timeout="onStartTimeout" :viewed="stateViewer" />
   <Settings v-if="settingsVisible" :settings="settings" @close="onCloseSettings" />
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .container {
   width: 100%;
 }
 
-header {}
+header {
+  height: 2rem;
+}
 
 .toolbar {
   display: flex;

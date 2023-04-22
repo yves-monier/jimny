@@ -45,8 +45,8 @@ export default {
       current.value = index;
       dictElements.value[index].scrollIntoView();
     };
-    const onGreynirLeave = (index) => {
-      console.log(`onGreynirLeave: ${index}`)
+    const onGreynirLeave = (/*index*/) => {
+      // console.log(`onGreynirLeave: ${index}`)
       current.value = -1;
     };
 
@@ -87,8 +87,8 @@ export default {
       return d; // [ [lemma+pos, dict], ..., [lemma+pos, dict] ]
     });
 
-    watch(() => props.viewed.index, (newValue, oldValue) => {
-      console.log(`props.view has been updated: ${oldValue} => ${newValue}`);
+    watch(() => props.viewed.index, (/*newValue, oldValue*/) => {
+      // console.log(`props.view has been updated: ${oldValue} => ${newValue}`);
       if (props.viewed.autoplay) {
         if (props.viewed.sentence.audio) {
           if (sourceElement.value) {
@@ -114,9 +114,8 @@ export default {
 
 <template>
   <div class="sentence" @mouseenter="$emit('stop-timeout')" @mouseleave="$emit('start-timeout')">
-    <header>{{ 1 + viewed.index }} / {{ viewed.total }} <button @click="$emit('next-sentence')">next</button></header>
     <div :class="['texts', viewed.sentence.english || viewed.sentence.french ? 'with-target' : 'without-target']">
-      <div class="source-text icelandic">
+      <div class="source-text icelandic" :title="`sentence no. ${viewed.sentence.id}`">
         {{ viewed.sentence.icelandic }}
         <button v-if="viewed.sentence.audio" class="audio" @click="onListen"></button>
         <span class="audio-controls">
@@ -156,7 +155,7 @@ export default {
   </div>
 </template>
 
-<style lang="scss" >
+<style lang="scss" scoped>
 .sentence {
   flex: 1;
   min-height: 0;
@@ -171,7 +170,6 @@ header {
 }
 
 .texts {
-  margin-top: 1rem;
   margin-bottom: 1rem;
   padding: 0.33rem;
   display: flex;

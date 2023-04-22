@@ -4,7 +4,7 @@ import { reactive, ref } from "vue";
 export default {
   props: {
     settings: {
-      type: Object, default: () => { return { } },
+      type: Object, default: () => { return {} },
     }
   },
   components: {},
@@ -79,7 +79,8 @@ export default {
         <p>
           <input type="checkbox" id="autobrowse" name="autobrowse" v-model="dialogSettings.autobrowse" />
           <label for="autobrowse">Browse sentences automatically</label>
-          <input type="number" min="1" max="60" v-model="dialogSettings.autobrowseDuration" :disabled="dialogSettings.autobrowse ? 'disabled' : null">
+          <input type="number" min="1" max="60" v-model="dialogSettings.autobrowseDuration"
+            :disabled="dialogSettings.autobrowse ? null : 'disabled'">
         </p>
       </div>
       <footer>

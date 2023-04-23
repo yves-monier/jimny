@@ -96,7 +96,7 @@ export default {
   width: 100%;
   height: 100%;
   background-color: rgba(200, 200, 200, 0.7);
-  position: absolute;
+  position: fixed;
 }
 
 .dialog {

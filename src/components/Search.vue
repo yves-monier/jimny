@@ -3,16 +3,18 @@
     <div class="search">
         <input type="text" id="leita" name="leita" :placeholder="`Leita (${sentences.length})`" v-model="store.input" />
         <div v-if="store.results && store.results.length > 0" class="search-result">
-            <!-- div class="icon-close" @click="onCloseSearch"></div -->
-            <ul>
-                <li v-for="(sentence, index) in store.results" :key="`search-${index}`"
-                    @click="$emit('select-sentence', sentence)">
-                    {{ sentence.icelandic }}
-                    <!-- span class="search-src" v-html="highlightSearch(word.src)"></span><span class="search-target"
+            <div class="search-result-overlay" @click="onClickOutside($event)">
+                <!-- div class="icon-close" @click="onCloseSearch"></div -->
+                <ul class="search-results-list">
+                    <li v-for="(sentence, index) in store.results" :key="`search-${index}`"
+                        @click="$emit('select-sentence', sentence)">
+                        {{ sentence.icelandic }}
+                        <!-- span class="search-src" v-html="highlightSearch(word.src)"></span><span class="search-target"
                                                                                     v-html="highlightSearch(word.target)">
                                                                                 </span -->
-                </li>
-            </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </template>
@@ -30,7 +32,7 @@ export default {
     //   };
     //   return { onFileClick };
     // },
-    setup(props) {
+    setup(props/*, context*/) {
         const store = reactive({ input: "", searched: "", results: [] });
 
         let searchTimeout;
@@ -64,7 +66,14 @@ export default {
         //     }
         // );
 
-        return { store/*, results*/ };
+        const onClickOutside = (/*ev*/) => {
+            // if (ev.target.classList.contains("dialog-overlay")) {
+            //     context.emit('close');
+            // }
+            store.results = null;
+        };
+
+        return { store, onClickOutside /*, results*/ };
     },
 };
 </script>
@@ -81,5 +90,28 @@ export default {
             outline: 0;
         }
     }
+}
+
+.search-result-overlay {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(200, 200, 200, 0.7);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.search-results-list {
+    width: 80%;
+    max-width: 40rem;
+    height: 80%;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid #999;
+    border-radius: 10px;
+    background-color: white;
 }
 </style>

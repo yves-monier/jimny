@@ -1,10 +1,7 @@
 <template>
     <!-- div class="form-group mt-4 mb-2 search" -->
     <div class="search">
-        <div class="search-input">
-            <input type="text" id="leita" name="leita" :placeholder="`Leita (${sentences.length})`" v-model="store.input" />
-            <!-- div v-if="search.result && search.result.length > 0" class="icon-close" @click="onCloseSearch"></div -->
-        </div>
+        <input type="text" id="leita" name="leita" :placeholder="`Leita (${sentences.length})`" v-model="store.input" />
         <div v-if="store.results && store.results.length > 0" class="search-result">
             <!-- div class="icon-close" @click="onCloseSearch"></div -->
             <ul>
@@ -72,4 +69,13 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+.search {
+    padding-left: 6px;
+    padding-right: 6px;
+    
+    input {
+        border: none;
+    }
+}
+</style>

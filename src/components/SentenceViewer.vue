@@ -170,7 +170,6 @@ header {
 }
 
 .texts {
-  margin-bottom: 1rem;
   padding: 0.33rem;
   display: flex;
   flex-direction: row;

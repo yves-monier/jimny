@@ -226,22 +226,21 @@ export default {
 </script>
 
 <template>
-  <header>
-    <div class="toolbar">
-      <div class="flags">
-        <div :class="['flag', 'flag-FR', `flag-${flags['FR']}`]" @click="onToggleFlag($event, 'FR')"></div>
-        <div :class="['flag', 'flag-UK', `flag-${flags['UK']}`]" @click="onToggleFlag($event, 'UK')"></div>
-        <div :class="['flag', 'flag-audio', `flag-${flags['audio']}`]" @click="onToggleFlag($event, 'audio')"></div>
-      </div>
-      <div class="actions">
-        <div class="action action-settings" @click="onSettings"></div>
-        <div class="action action-pause"></div>
-      </div>
-      <Search class="search" :sentences="sentences" @select-sentence="onSelectSentence" />
-      <div class="nav">{{ 1 + stateViewer.index }} / {{ stateViewer.total }} <button @click="onNextSentence">next</button>
-      </div>
+  <div class="toolbar">
+    <div class="toolbar-item flags">
+      <div :class="['flag', 'flag-FR', `flag-${flags['FR']}`]" @click="onToggleFlag($event, 'FR')"></div>
+      <div :class="['flag', 'flag-UK', `flag-${flags['UK']}`]" @click="onToggleFlag($event, 'UK')"></div>
+      <div :class="['flag', 'flag-audio', `flag-${flags['audio']}`]" @click="onToggleFlag($event, 'audio')"></div>
     </div>
-  </header>
+    <Search class="toolbar-item  search" :sentences="sentences" @select-sentence="onSelectSentence" />
+    <div class="toolbar-item nav"><span class="nav-index">{{ 1 + stateViewer.index }} / {{ stateViewer.total
+    }}</span><button @click="onNextSentence">next</button>
+    </div>
+    <div class="toolbar-item actions">
+      <div class="action action-settings" @click="onSettings"></div>
+      <div class="action action-pause"></div>
+    </div>
+  </div>
   <SentenceViewer @stop-timeout="onStopTimeout" @start-timeout="onStartTimeout" :viewed="stateViewer" />
   <Settings v-if="settingsVisible" :settings="settings" @close="onCloseSettings" />
 </template>
@@ -251,68 +250,91 @@ export default {
   width: 100%;
 }
 
-header {
-  height: 2rem;
-}
-
 .toolbar {
   display: flex;
+  align-items: center;
+  height: 3rem;
 }
 
-.action {
-  display: block;
-  text-indent: -9999px;
-  width: 24px;
-  height: 24px;
-  background-size: 20px 20px;
-  background-repeat: no-repeat;
-  background-position: center center;
-}
-
-.action-settings {
-  background-image: url(./assets/settings.svg);
+.toolbar-item {
+  display: flex;
+  margin-left: 0.5rem;
+  border: 1px solid #bbb;
+  border-radius: 10px;
+  height: 30px;
+  align-items: center;
 }
 
 .flags {
-  display: flex;
+  padding-left: 4px;
+  padding-right: 4px;
+
+  .flag {
+    width: 30px;
+    height: 22px;
+    background-size: cover;
+    border: 3px solid transparent;
+
+    &.flag-FR {
+      background-image: url("./assets/flags/flag_FR.jpg");
+    }
+
+    &.flag-UK {
+      background-image: url("./assets/flags/flag_UK.jpg");
+    }
+
+    &.flag-audio {
+      background-image: url("./assets/flags/flag_audio.jpg");
+    }
+
+    &.flag-any {
+      border-color: white;
+    }
+
+    &.flag-on {
+      border-color: green;
+    }
+
+    &.flag-off {
+      border-color: red;
+    }
+  }
 }
 
-.flag {
-  width: 30px;
-  height: 22px;
-  background-size: cover;
-  border: 3px solid transparent;
-}
+.search {}
 
-.flag-FR {
-  background-image: url("./assets/flags/flag_FR.jpg");
-}
+.nav {
+  padding-left: 8px;
+  padding-right: 8px;
 
-.flag-UK {
-  background-image: url("./assets/flags/flag_UK.jpg");
-}
-
-.flag-audio {
-  background-image: url("./assets/flags/flag_audio.jpg");
-}
-
-.flag-any {
-  border-color: white;
-}
-
-.flag-on {
-  border-color: green;
-}
-
-.flag-off {
-  border-color: red;
+  .nav-index {
+    display: none;
+  }
 }
 
 .actions {
-  margin-left: 0.5rem;
-}
+  margin-left: auto;
+  margin-right: 0.5rem;
+  padding-left: 4px;
+  padding-right: 4px;
 
-.search {
-  margin-left: 0.5rem;
+  .action {
+    display: block;
+    text-indent: -9999px;
+    width: 24px;
+    height: 24px;
+    background-size: 20px 20px;
+    background-repeat: no-repeat;
+    background-position: center center;
+  }
+
+  .action-settings {
+    background-image: url(./assets/settings.svg);
+  }
+
+  .action-pause {
+    // background-image: url(./assets/pause.svg);
+    display: none;
+  }
 }
 </style>

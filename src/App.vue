@@ -208,6 +208,10 @@ export default {
       doNextSentence();
     };
 
+    const onPause = () => {
+      console.log("onPause");
+    };
+
     const onSelectSentence = (sentence) => {
       for (let ii = 0; ii < sentences.length; ii++) {
         if (sentences[ii].id == sentence.id) {
@@ -220,7 +224,7 @@ export default {
 
     doStartTimeout();
 
-    return { sentences, stateViewer, settingsVisible, settings, onSettings, onCloseSettings, onStopTimeout, onStartTimeout, onSelectSentence, onNextSentence, flags, onToggleFlag };
+    return { sentences, stateViewer, settingsVisible, settings, onSettings, onCloseSettings, onStopTimeout, onStartTimeout, onSelectSentence, onNextSentence, onPause, flags, onToggleFlag };
   },
 };
 </script>
@@ -233,12 +237,15 @@ export default {
       <div :class="['flag', 'flag-audio', `flag-${flags['audio']}`]" @click="onToggleFlag($event, 'audio')"></div>
     </div>
     <Search class="toolbar-item  search" :sentences="sentences" @select-sentence="onSelectSentence" />
-    <div class="toolbar-item nav"><span class="nav-index">{{ 1 + stateViewer.index }} / {{ stateViewer.total
-    }}</span><button @click="onNextSentence">next</button>
+    <div class="toolbar-item nav">
+      <span class="nav-index">{{ 1 + stateViewer.index }} / {{ stateViewer.total
+      }}</span>
+      <button class="icon-button nav-next" @click="onNextSentence"></button>
+      <button class="icon-button nav-pause" @click="onPause"></button>
     </div>
     <div class="toolbar-item actions">
-      <div class="action action-settings" @click="onSettings"></div>
-      <div class="action action-pause"></div>
+      <button class="icon-button action-settings" @click="onSettings"></button>
+      <button class="icon-button action-pause"></button>
     </div>
   </div>
   <SentenceViewer @stop-timeout="onStopTimeout" @start-timeout="onStartTimeout" :viewed="stateViewer" />
@@ -270,9 +277,9 @@ export default {
   padding-right: 4px;
 
   .flag {
-    width: 30px;
-    height: 22px;
-    background-size: cover;
+    width: 29px;
+    height: 20px;
+    background-size: contain;
     border: 3px solid transparent;
 
     &.flag-FR {
@@ -301,7 +308,23 @@ export default {
   }
 }
 
-.search {}
+.icon-button {
+  display: block;
+  text-indent: -9999px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background-color: transparent;
+  background-size: 20px 20px;
+  background-repeat: no-repeat;
+  background-position: center center;
+
+  &:hover, &:focus {
+    background-color: #ddd;
+    border-radius: 6px;
+    outline: 0;
+  }
+}
 
 .nav {
   padding-left: 8px;
@@ -310,6 +333,14 @@ export default {
   .nav-index {
     display: none;
   }
+
+  .nav-next {
+    background-image: url(./assets/next.svg);
+  }
+
+  .nav-pause {
+    background-image: url(./assets/pause.svg);
+  }
 }
 
 .actions {
@@ -317,16 +348,6 @@ export default {
   margin-right: 0.5rem;
   padding-left: 4px;
   padding-right: 4px;
-
-  .action {
-    display: block;
-    text-indent: -9999px;
-    width: 24px;
-    height: 24px;
-    background-size: 20px 20px;
-    background-repeat: no-repeat;
-    background-position: center center;
-  }
 
   .action-settings {
     background-image: url(./assets/settings.svg);

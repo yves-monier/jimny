@@ -73,9 +73,13 @@ export default {
 .search {
     padding-left: 6px;
     padding-right: 6px;
-    
+
     input {
         border: none;
+
+        &:focus {
+            outline: 0;
+        }
     }
 }
 </style>

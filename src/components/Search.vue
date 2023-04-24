@@ -1,11 +1,13 @@
 <template>
     <!-- div class="form-group mt-4 mb-2 search" -->
     <div class="search">
-        <input type="text" id="leita" name="leita" :placeholder="`Leita (${sentences.length})`" v-model="store.input" />
+        <input ref="inputElement" type="text" id="leita" name="leita" :placeholder="`Leita (${sentences.length})`"
+            v-model="store.input" />
+        <!-- div v-if="store.results && store.results.length > 0" class="search-result-overlay" @click="onClickOutside($event)" -->
         <div v-if="store.results && store.results.length > 0" class="search-result">
-            <div class="search-result-overlay" @click="onClickOutside($event)">
-                <!-- div class="icon-close" @click="onCloseSearch"></div -->
-                <ul class="search-results-list">
+            <!-- div class="icon-close" @click="onCloseSearch"></div -->
+            <custom-scrollbar class="search-result-scroller" :style="{ width: '100%', height: '100%' }">
+                <ul class="search-result-list">
                     <li v-for="(sentence, index) in store.results" :key="`search-${index}`"
                         @click="$emit('select-sentence', sentence)">
                         {{ sentence.icelandic }}
@@ -14,18 +16,21 @@
                                                                                 </span -->
                     </li>
                 </ul>
-            </div>
+            </custom-scrollbar>
         </div>
+        <!-- /div -->
     </div>
 </template>
 <script>
-import { reactive, watch } from 'vue'
+import { reactive, ref, watch } from 'vue'
+import CustomScrollbar from 'custom-vue-scrollbar';
+import 'custom-vue-scrollbar/dist/style.css';
 
 export default {
     props: {
         sentences: { type: Array, default: () => [] },
     },
-    components: {},
+    components: { CustomScrollbar },
     // setup(_, { emit }) {
     //   const onFileClick = (file) => {
     //     if (file.directory) emit("folderclick", file);
@@ -33,6 +38,8 @@ export default {
     //   return { onFileClick };
     // },
     setup(props/*, context*/) {
+        const inputElement = ref(null);
+
         const store = reactive({ input: "", searched: "", results: [] });
 
         let searchTimeout;
@@ -45,6 +52,7 @@ export default {
                     searchTimeout = null;
                 }
                 searchTimeout = setTimeout(() => {
+                    // inputElement.value.blur();
                     store.searched = store.input;
                     if (!store.searched || store.searched.length < 3) {
                         // not enough to search
@@ -73,7 +81,7 @@ export default {
             store.results = null;
         };
 
-        return { store, onClickOutside /*, results*/ };
+        return { store, onClickOutside, inputElement /*, results*/ };
     },
 };
 </script>
@@ -102,7 +110,7 @@ export default {
     z-index: 1000;
 }
 
-.search-results-list {
+.search-result {
     width: 80%;
     max-width: 40rem;
     height: 80%;
@@ -112,6 +120,17 @@ export default {
     transform: translate(-50%, -50%);
     border: 1px solid #999;
     border-radius: 10px;
-    background-color: white;
+    background-color: rgba(240, 240, 240, 0.9);
+    z-index: 2000;
+}
+
+.search-result-list {
+    list-style: none;
+    padding-left: 1rem;
+}
+
+.scrollbar__wrapper {
+    width: 100%;
+    height: 100%;
 }
 </style>

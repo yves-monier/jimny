@@ -321,7 +321,7 @@ export default {
 
   &:hover, &:focus {
     background-color: #ddd;
-    border-radius: 6px;
+    border-radius: 12px;
     outline: 0;
   }
 }

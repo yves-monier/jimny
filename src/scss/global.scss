@@ -26,3 +26,81 @@ body {
     display       : flex;
     flex-direction: column;
 }
+
+.dict-html {
+    font-size: 85%;
+
+    .entry {
+        // display: flex;
+        margin-top: 0.5rem;
+    }
+
+    .entry.highlight {
+        background-color: lightsteelblue;
+        transition      : background-color 0.5s;
+    }
+
+    // .entry>.entry-url {
+    //   cursor: pointer;
+    //   margin-right: 0.5rem;
+    //   display: inline-block;
+    //   width: 16px;
+    //   height: 16px;
+    //   flex: 0 0 auto;
+    //   background-image: url("images/uwdc.png");
+    //   background-position: left top;
+    //   background-repeat: no-repeat;
+    // }
+
+    .entry>p.headwd {
+        margin-bottom: 0.5rem;
+    }
+
+    .entry>.headwd>.graminfl>.gram {
+        text-transform  : capitalize;
+        font-family     : 'Inconsolata', monospace;
+        background-color: darkred;
+        color           : white;
+        padding         : 0 4px;
+        border-radius   : 8px;
+    }
+
+    .entry>.headwd>.lemma {
+        font-weight: 700;
+    }
+
+    .entry .sense {
+        margin-bottom: 0.5rem;
+    }
+
+    .entry .sense .re {
+        margin-top: 0.5rem;
+    }
+
+    .entry .hw-placeholder {
+        display: none;
+    }
+
+    .entry .hw-actual {
+        display          : initial;
+        /*font-style     : italic;
+              font-weight: bold;*/
+        text-decoration  : underline;
+    }
+
+    .orth+.sense {
+        display: inline-block;
+    }
+
+    // .orth+.sense:before {
+    //     content: "\00a0\279c\00a0";
+    // }
+
+    .sense .trans:before {
+        content: "\00a0\279c\00a0";
+    }
+
+    .abbr-is {
+        font-style: italic;
+    }
+}

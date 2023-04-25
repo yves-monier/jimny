@@ -3,9 +3,9 @@
     <div class="search">
         <input ref="inputElement" type="text" id="leita" name="leita" :placeholder="`Leita (${sentences.length})`"
             v-model="store.input" />
-        <!-- div v-if="store.results && store.results.length > 0" class="search-result-overlay" @click="onClickOutside($event)" -->
+        <!-- div v-if="store.results && store.results.length > 0" class="search-result-overlay" @click="onClose($event)" -->
         <div v-if="store.results && store.results.length > 0" class="search-result">
-            <!-- div class="icon-close" @click="onCloseSearch"></div -->
+            <div class="search-close" @click="onClose"></div>
             <custom-scrollbar class="search-result-scroller" :style="{ width: '100%', height: '100%' }">
                 <ul class="search-result-list">
                     <li v-for="(sentence, index) in store.results" :key="`search-${index}`"
@@ -74,14 +74,14 @@ export default {
         //     }
         // );
 
-        const onClickOutside = (/*ev*/) => {
+        const onClose = (/*ev*/) => {
             // if (ev.target.classList.contains("dialog-overlay")) {
             //     context.emit('close');
             // }
             store.results = null;
         };
 
-        return { store, onClickOutside, inputElement /*, results*/ };
+        return { store, onClose, inputElement /*, results*/ };
     },
 };
 </script>
@@ -110,6 +110,24 @@ export default {
     z-index: 1000;
 }
 
+.search-close {
+    position: absolute;
+    top: 10px;
+    right: 30px;
+    z-index: 10000;
+
+    &::after {
+        position: absolute;
+        content: "";
+        width: 20px;
+        height: 20px;
+        background-size: 20px 20px;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-image: url(../assets/close.svg);
+    }
+}
+
 .search-result {
     width: 80%;
     max-width: 40rem;
@@ -127,6 +145,10 @@ export default {
 .search-result-list {
     list-style: none;
     padding-left: 1rem;
+
+    li {
+        cursor: default;
+    }
 }
 
 .scrollbar__wrapper {

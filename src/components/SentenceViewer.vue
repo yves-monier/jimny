@@ -292,7 +292,8 @@ export default {
 </script>
 
 <template>
-  <div class="sentence" @mouseenter="$emit('stop-timeout')" @mouseleave="$emit('start-timeout')">
+  <div :class="['sentence', viewed.large ? 'sentence-large' : 'sentence-small']" @mouseenter="$emit('stop-timeout')"
+    @mouseleave="$emit('start-timeout')">
     <div :class="['texts', viewed.sentence.english || viewed.sentence.french ? 'with-target' : 'without-target']">
       <div class="source-text icelandic" :title="`sentence no. ${viewed.sentence.id}`">
         {{ viewed.sentence.icelandic }}
@@ -406,6 +407,10 @@ header {
   flex-direction: row;
 }
 
+.sentence-small .dict {
+  display: none;
+}
+
 .dict-entry {
   border: 1px solid #999;
   margin-left: 5px;
@@ -446,10 +451,12 @@ header {
 .greynir-word {
   display: inline-block;
   margin-right: 0.3rem;
+  border-bottom: 2px solid transparent;
 }
 
 .current-greynir-word {
-  text-decoration: underline;
+  // text-decoration: underline;
+  border-bottom: 2px solid #999;
 }
 
 .greynir-lemma {}

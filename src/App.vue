@@ -110,6 +110,7 @@ export default {
         () => { return sentences[stateViewer.index] }
       ),
       autoplay: true,
+      large: true,
     });
 
     let settings = reactive({ autoplay: stateViewer.autoplay, sentencesFile: "C:\\Dev\\droopy\\greynir\\jimny_sentences.json", wordsFolder: "C:\\Dev\\droopy\\greynir\\jimny_words", audioFolder: "C:\\Data\\Islandais\\samromur", autobrowse: false, autobrowseDuration: 5 });
@@ -129,6 +130,10 @@ export default {
       settingsVisible.value = false;
     };
 
+    const onSize = (large) => {
+      stateViewer.large = large;
+    };
+
     let intervalId = undefined;
 
     const onStopTimeout = () => {
@@ -145,17 +150,17 @@ export default {
           clearInterval(intervalId);
         }
         intervalId = setInterval(() => {
-          doNextSentence();
+          doNextSentence(1);
         }, 1000 * settings.autobrowseDuration);
       }
     };
 
-    const doNextSentence = () => {
+    const doNextSentence = (step) => {
       let current = stateViewer.index;
       let rewound = false;
       let foundNext = false;
       while (!foundNext) {
-        stateViewer.index = stateViewer.index + 1;
+        stateViewer.index = stateViewer.index + step;
         if (stateViewer.index == total) {
           if (!rewound) {
             stateViewer.index = 0;
@@ -201,11 +206,11 @@ export default {
       doStartTimeout();
     };
 
-    const onNextSentence = () => {
+    const onNextSentence = (step) => {
       if (settings.autobrowse) {
         doStartTimeout();
       }
-      doNextSentence();
+      doNextSentence(step);
     };
 
     const onPause = () => {
@@ -224,7 +229,7 @@ export default {
 
     doStartTimeout();
 
-    return { sentences, stateViewer, settingsVisible, settings, onSettings, onCloseSettings, onStopTimeout, onStartTimeout, onSelectSentence, onNextSentence, onPause, flags, onToggleFlag };
+    return { sentences, stateViewer, settingsVisible, settings, onSettings, onCloseSettings, onSize, onStopTimeout, onStartTimeout, onSelectSentence, onNextSentence, onPause, flags, onToggleFlag };
   },
 };
 </script>
@@ -240,12 +245,14 @@ export default {
     <div class="toolbar-item nav">
       <span class="nav-index">{{ 1 + stateViewer.index }} / {{ stateViewer.total
       }}</span>
-      <button class="icon-button nav-next" @click="onNextSentence"></button>
+      <button class="icon-button nav-prev" @click="onNextSentence(-1)"></button>
+      <button class="icon-button nav-next" @click="onNextSentence(1)"></button>
       <button class="icon-button nav-pause" @click="onPause"></button>
     </div>
     <div class="toolbar-item actions">
+      <button v-if="stateViewer.large" class="icon-button action-collapse" @click="onSize(false)"></button>
+      <button v-else class="icon-button action-expand" @click="onSize(true)"></button>
       <button class="icon-button action-settings" @click="onSettings"></button>
-      <button class="icon-button action-pause"></button>
     </div>
   </div>
   <SentenceViewer @stop-timeout="onStopTimeout" @start-timeout="onStartTimeout" :viewed="stateViewer" />
@@ -318,11 +325,15 @@ export default {
   background-size: 20px 20px;
   background-repeat: no-repeat;
   background-position: center center;
+  outline: 0;
+  border-radius: 12px;
 
-  &:hover, &:focus {
+  &:hover {
     background-color: #ddd;
-    border-radius: 12px;
-    outline: 0;
+  }
+
+  &:focus {
+    box-shadow: inset 0px 0px 0px 1px #eee;
   }
 }
 
@@ -332,6 +343,10 @@ export default {
 
   .nav-index {
     display: none;
+  }
+
+  .nav-prev {
+    background-image: url(./assets/prev.svg);
   }
 
   .nav-next {
@@ -348,6 +363,14 @@ export default {
   margin-right: 0.5rem;
   padding-left: 4px;
   padding-right: 4px;
+
+  .action-collapse {
+    background-image: url(./assets/collapse.svg);
+  }
+
+  .action-expand {
+    background-image: url(./assets/expand.svg);
+  }
 
   .action-settings {
     background-image: url(./assets/settings.svg);

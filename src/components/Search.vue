@@ -9,7 +9,7 @@
             <custom-scrollbar class="search-result-scroller" :style="{ width: '100%', height: '100%' }">
                 <ul class="search-result-list">
                     <li v-for="(sentence, index) in store.results" :key="`search-${index}`"
-                        @click="$emit('select-sentence', sentence)">
+                        @click="onSelectSentence(sentence)">
                         {{ sentence.icelandic }}
                         <!-- span class="search-src" v-html="highlightSearch(word.src)"></span><span class="search-target"
                                                                                     v-html="highlightSearch(word.target)">
@@ -37,7 +37,7 @@ export default {
     //   };
     //   return { onFileClick };
     // },
-    setup(props/*, context*/) {
+    setup(props, context) {
         const inputElement = ref(null);
 
         const store = reactive({ input: "", searched: "", results: [] });
@@ -81,7 +81,12 @@ export default {
             store.results = null;
         };
 
-        return { store, onClose, inputElement /*, results*/ };
+        const onSelectSentence = (sentence) => {
+            context.emit('select-sentence', sentence);
+            store.results = null;
+        };
+
+        return { store, onClose, onSelectSentence, inputElement /*, results*/ };
     },
 };
 </script>
@@ -145,9 +150,15 @@ export default {
 .search-result-list {
     list-style: none;
     padding-left: 1rem;
+    padding-right: 1rem;
 
     li {
         cursor: default;
+        padding: 2px 4px;
+        
+        &:hover {
+            background-color: #cfe0ff;
+        }
     }
 }
 

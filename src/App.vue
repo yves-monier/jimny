@@ -132,6 +132,11 @@ export default {
 
     const onSize = (large) => {
       stateViewer.large = large;
+      if (large) {
+        window.electronAPI.setSize(800, 600, true);
+      } else {
+        window.electronAPI.setSize(500, 200, false);
+      }
     };
 
     let intervalId = undefined;

@@ -56,10 +56,11 @@ async function createWindow() {
     }
   });
 
-  ipcMain.on("set-size", (event, w, h) => {
+  ipcMain.on("set-size", (event, w, h, showMenu) => {
     const webContents = event.sender;
     const win = BrowserWindow.fromWebContents(webContents);
     win.setSize(w, h);
+    win.setMenuBarVisibility(showMenu);
   });
 
   ipcMain.handle('dialog:open-directory', async () => {

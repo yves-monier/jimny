@@ -15,6 +15,7 @@
   "dependencies": {
     "@electron/remote": "^2.0.9",
     "bootstrap": "^5.2.3",
+    "cheerio": "^1.0.0-rc.12",
     "core-js": "^3.6.5",
     "custom-vue-scrollbar": "^0.0.7",
     "vue": "^3.0.0"

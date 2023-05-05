@@ -4,6 +4,9 @@ import { app, protocol, BrowserWindow, ipcMain, dialog } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
 
+// const { load } = require('cheerio');
+import { load } from "cheerio";
+
 const isDevelopment = process.env.NODE_ENV !== "production";
 
 const path = require("path");
@@ -39,6 +42,7 @@ async function createWindow() {
     try {
       const jsonString = fs.readFileSync(f);
       let html = JSON.parse(jsonString);
+      const $ = load(html);
       event.returnValue = html;
     } catch (err) {
       event.returnValue = { dict: `File not found: ${lemmaPos}.json` };

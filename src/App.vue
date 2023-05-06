@@ -252,7 +252,7 @@ export default {
       }}</span>
       <button class="icon-button nav-prev" @click="onNextSentence(-1)"></button>
       <button class="icon-button nav-next" @click="onNextSentence(1)"></button>
-      <button class="icon-button nav-pause" @click="onPause"></button>
+      <button class="icon-button nav-pause" :disabled="stateViewer.autoplay ? null : 'disabled'" @click="onPause"></button>
     </div>
     <div class="toolbar-item actions">
       <button v-if="stateViewer.large" class="icon-button action-collapse" @click="onSize(false)"></button>
@@ -333,12 +333,16 @@ export default {
   outline: 0;
   border-radius: 12px;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background-color: #ddd;
   }
 
-  &:focus {
+  &:focus:not(:disabled) {
     box-shadow: inset 0px 0px 0px 1px #eee;
+  }
+
+  &:disabled {
+    opacity: 0.2;
   }
 }
 

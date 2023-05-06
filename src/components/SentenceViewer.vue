@@ -4,6 +4,7 @@
 import { computed, ref, watch } from 'vue'
 import CustomScrollbar from 'custom-vue-scrollbar';
 import 'custom-vue-scrollbar/dist/style.css';
+import { load } from "cheerio";
 
 let abbreviations = [
   // { "abbr": "acc", "is": "?olfall", "en": "accusative" },
@@ -120,68 +121,53 @@ function htmlEscape(string) {
 }
 
 // eslint-disable-next-line no-unused-vars
-function enrichIcelandic($dictLookupHtml, headwd, entryElement) {
-  let hwFull = headwd;
+function enrichIcelandic(html) {
+  let $dictLookupHtml = load(html);
+  $dictLookupHtml(".entry").each(function (i, objEntry) {
+    let $entry = $dictLookupHtml(objEntry);
 
-  // search for '/' or '.' headword separator (see https://digicoll.library.wisc.edu/cgi-bin/IcelOnline/IcelOnline.TEId-idx?type=HTML&rgn=DIV1&id=IcelOnline.IEOrd&target=IcelOnline.IEOrd.Guide)
-  let separatorPos = hwFull.indexOf('/');
-  if (separatorPos == -1) {
-    separatorPos = hwFull.indexOf('.');
-  }
-  if (separatorPos != -1) {
-    let regex = new RegExp('\\/|\\.', 'g');
-    hwFull = hwFull.replace(regex, ''); // e.g. "tal/a" => "tala"
-  }
-
-  let regexFull = /(~~)/g;
-  let enrichmentFull = "<span class='hw-placeholder'>$1</span><span class='hw-actual'>" + htmlEscape(hwFull) + "</span>";
-  let regexBeforeSeparator = /(~)/g;
-  let hwBeforeSeparator = headwd;
-  if (separatorPos != -1) {
-    hwBeforeSeparator = hwBeforeSeparator.substring(0, separatorPos);
-  }
-  let enrichmentBeforeSeparator = "<span class='hw-placeholder'>$1</span><span class='hw-actual'>" + htmlEscape(hwBeforeSeparator) + "</span>";
-
-  $dictLookupHtml(".orth, .usg", entryElement).each(function (i, obj) {
-    let $obj = $dictLookupHtml(obj);
-    let html = $obj.html();
-    let enrichedHtml = html.replace(regexFull, enrichmentFull); // tala, segja, sj?n, ...
-    enrichedHtml = enrichedHtml.replace(regexBeforeSeparator, enrichmentBeforeSeparator); // tala, segja, sj?n
-    enrichedHtml = desabbreviate(enrichedHtml);
-    if (html !== enrichedHtml) {
-      $obj.html(enrichedHtml);
+    let headwdObj = $dictLookupHtml(".headwd > .lemma", $entry);
+    let headwd = "???";
+    if (headwdObj.length > 0) {
+      headwd = headwdObj[0].children.filter(function (node) {
+        return node.nodeType == 3;
+      })[0].nodeValue;
     }
+
+    let hwFull = headwd;
+
+    // search for '/' or '.' headword separator (see https://digicoll.library.wisc.edu/cgi-bin/IcelOnline/IcelOnline.TEId-idx?type=HTML&rgn=DIV1&id=IcelOnline.IEOrd&target=IcelOnline.IEOrd.Guide)
+    let separatorPos = hwFull.indexOf('/');
+    if (separatorPos == -1) {
+      separatorPos = hwFull.indexOf('.');
+    }
+    if (separatorPos != -1) {
+      let regex = new RegExp('\\/|\\.', 'g');
+      hwFull = hwFull.replace(regex, ''); // e.g. "tal/a" => "tala"
+    }
+
+    let regexFull = /(~~)/g;
+    let enrichmentFull = "<span class='hw-placeholder'>$1</span><span class='hw-actual'>" + htmlEscape(hwFull) + "</span>";
+    let regexBeforeSeparator = /(~)/g;
+    let hwBeforeSeparator = headwd;
+    if (separatorPos != -1) {
+      hwBeforeSeparator = hwBeforeSeparator.substring(0, separatorPos);
+    }
+    let enrichmentBeforeSeparator = "<span class='hw-placeholder'>$1</span><span class='hw-actual'>" + htmlEscape(hwBeforeSeparator) + "</span>";
+
+    $dictLookupHtml(".orth, .usg"/*, entryElement*/, $entry).each(function (i, objOrth) {
+      let $obj = $dictLookupHtml(objOrth);
+      let html = $obj.html();
+      let enrichedHtml = html.replace(regexFull, enrichmentFull); // tala, segja, sj?n, ...
+      enrichedHtml = enrichedHtml.replace(regexBeforeSeparator, enrichmentBeforeSeparator); // tala, segja, sj?n
+      enrichedHtml = desabbreviate(enrichedHtml);
+      if (html !== enrichedHtml) {
+        $obj.html(enrichedHtml);
+      }
+    });
   });
-}
-
-// eslint-disable-next-line no-unused-vars
-function enrichHeadword(entry) {
-  let hwFull = entry.hw;
-
-  // search for '/' or '.' headword separator (see https://digicoll.library.wisc.edu/cgi-bin/IcelOnline/IcelOnline.TEId-idx?type=HTML&rgn=DIV1&id=IcelOnline.IEOrd&target=IcelOnline.IEOrd.Guide)
-  let separatorPos = hwFull.indexOf('/');
-  if (separatorPos == -1) {
-    separatorPos = hwFull.indexOf('.');
-  }
-  if (separatorPos != -1) {
-    let regex = new RegExp('\\/|\\.', 'g');
-    hwFull = hwFull.replace(regex, ''); // e.g. "tal/a" => "tala"
-  }
-
-  let regexFull = /(~~)/g;
-  let enrichmentFull = "<span class='hw-placeholder'>$1</span><span class='hw-actual'>" + htmlEscape(hwFull) + "</span>";
-  let html = entry.html;
-  let enrichedHtml = html.replace(regexFull, enrichmentFull); // tala, segja, sj?n, ...
-
-  let hwBeforeSeparator = entry.hw;
-  if (separatorPos != -1) {
-    hwBeforeSeparator = hwBeforeSeparator.substring(0, separatorPos);
-  }
-  let regexBeforeSeparator = /(~)/g;
-  let enrichmentBeforeSeparator = "<span class='hw-placeholder'>$1</span><span class='hw-actual'>" + htmlEscape(hwBeforeSeparator) + "</span>";
-  enrichedHtml = enrichedHtml.replace(regexBeforeSeparator, enrichmentBeforeSeparator); // tala, segja, sj?n
-
-  entry.html = enrichedHtml;
+  let enrichedHtml = $dictLookupHtml("body").html();
+  return enrichedHtml;
 }
 
 export default {
@@ -257,6 +243,9 @@ export default {
         let getDict = true;
         if (getDict /*lemmaPos == "hleypa+so"*/) {
           html = window.electronAPI.getDict(lemmaPos);
+          let enrichedDict = enrichIcelandic(html.dict);
+          html.dict = enrichedDict;
+          console.log(`enrichedHtml: ${enrichedDict}`)
         } else {
           html = { dict: `(2) File not found: ${lemmaPos}.json` }
         }

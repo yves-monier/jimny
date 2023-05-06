@@ -6,6 +6,31 @@ import CustomScrollbar from 'custom-vue-scrollbar';
 import 'custom-vue-scrollbar/dist/style.css';
 import { load } from "cheerio";
 
+// from https://greynir.is/doc/terminals.html
+const wordCategories = {
+  "no": "Noun (nafnorð)",
+  "so": "Verb (sagnorð)",
+  "lo": "Adjective (lýsingarorð)",
+  "fs": "Preposition (forsetning)",
+  "nhm": "Verb infinitive indicator (nafnháttarmerki, að)",
+  "gr": "Definite article (laus greinir, hinn/hin/hið)",
+  "uh": "Exclamation (upphrópun)",
+  "ao": "Adverb (atviksorð)",
+  "eo": "Qualifying adverb (atviksorð sem stendur með nafnorði í einkunn)",
+  "st": "Conjunction (samtenging)",
+  "stt": "Connective conjunction (sem/er-samtenging)",
+  "fn": "Pronoun (fornafn)",
+  "pfn": "Personal pronoun (persónufornafn)",
+  "abfn": "Reflexive pronoun (afturbeygt fornafn)",
+  "person": "Person name (mannsnafn)",
+  "sérnafn": "Proper name (sérnafn)",
+  "entity": "Proper name of recognized named entity",
+  "fyrirtæki": "Company name (fyrirtækisnafn)",
+  "gata": "Street name (götuheiti)",
+  "to": "Number word, inflectable (beygjanlegt töluorð) Only núll, einn, tveir, þrír, fjórir",
+  "töl": "Number word, uninflectable (óbeygjanlegt töluorð)"
+};
+
 let abbreviations = [
   // { "abbr": "acc", "is": "?olfall", "en": "accusative" },
   // { "abbr": "adj", "is": "l?singaror?", "en": "adjective" },
@@ -275,7 +300,7 @@ export default {
       } */
     });
 
-    return { dict, current, onListen, onGreynirEnter, onGreynirLeave, onDictEnter, onDictLeave, onDictNav, dictElements, audioElement, sourceElement };
+    return { dict, current, onListen, onGreynirEnter, onGreynirLeave, onDictEnter, onDictLeave, onDictNav, dictElements, audioElement, sourceElement, wordCategories };
   },
 };
 </script>
@@ -301,7 +326,8 @@ export default {
       <div v-for="(greynir, index) in viewed.sentence.greynir" :key="`greynir-${index}`"
         :class="['greynir-word', (index == current) && 'current-greynir-word']" @mouseenter="onGreynirEnter(index)"
         @mouseleave="onGreynirLeave(index)">
-        <span class="greynir-lemma">{{ greynir.lemma }}</span><span class="greynir-pos">{{ greynir.pos }}</span>
+        <span class="greynir-lemma">{{ greynir.lemma }}</span><span class="greynir-pos"
+          :title="wordCategories[greynir.pos] || '???'">{{ greynir.pos }}</span>
       </div>
     </div>
     <div v-if="dict" class="dict">

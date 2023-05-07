@@ -92,12 +92,15 @@ export default {
       }
     };
 
+    const appSettings = window.electronAPI.getSettings();
+    let settings = reactive(appSettings);
+
     let sentences = [];
     let total = 0;
     try {
       // const jsonString = fs.readFileSync("C:/Dev/droopy/greynir/jimny_sentences.json");
       // sentences = JSON.parse(jsonString);
-      sentences = window.electronAPI.getSentences();
+      sentences = window.electronAPI.getSentences(settings.sentencesFile);
       total = sentences.length;
     } catch (err) {
       console.log(err);
@@ -109,11 +112,8 @@ export default {
       sentence: computed(
         () => { return sentences[stateViewer.index] }
       ),
-      autoplay: true,
       large: true,
     });
-
-    let settings = reactive({ autoplay: stateViewer.autoplay, sentencesFile: "C:\\Dev\\droopy\\greynir\\jimny_sentences.json", wordsFolder: "C:\\Dev\\droopy\\greynir\\jimny_words", audioFolder: "C:\\Data\\Islandais\\samromur", autobrowse: false, autobrowseDuration: 5 });
 
     const settingsVisible = ref(false);
     const onSettings = () => {
@@ -122,10 +122,10 @@ export default {
     const onCloseSettings = (newSettings) => {
       console.log(`onCloseSettings: ${JSON.stringify(newSettings)}`);
       if (newSettings) {
+        window.electronAPI.setSettings(JSON.stringify(newSettings));
         Object.keys(newSettings).forEach(k => {
           settings[k] = newSettings[k];
         });
-        stateViewer.autoplay = newSettings.autoplay;
       }
       settingsVisible.value = false;
     };
@@ -252,7 +252,7 @@ export default {
       }}</span>
       <button class="icon-button nav-prev" @click="onNextSentence(-1)"></button>
       <button class="icon-button nav-next" @click="onNextSentence(1)"></button>
-      <button class="icon-button nav-pause" :disabled="stateViewer.autoplay ? null : 'disabled'" @click="onPause"></button>
+      <button class="icon-button nav-pause" :disabled="settings.autoplay ? null : 'disabled'" @click="onPause"></button>
     </div>
     <div class="toolbar-item actions">
       <button v-if="stateViewer.large" class="icon-button action-collapse" @click="onSize(false)"></button>
@@ -260,7 +260,7 @@ export default {
       <button class="icon-button action-settings" @click="onSettings"></button>
     </div>
   </div>
-  <SentenceViewer @stop-timeout="onStopTimeout" @start-timeout="onStartTimeout" :viewed="stateViewer" />
+  <SentenceViewer @stop-timeout="onStopTimeout" @start-timeout="onStartTimeout" :viewed="stateViewer" :settings="settings"/>
   <Settings v-if="settingsVisible" :settings="settings" @close="onCloseSettings" />
 </template>
 

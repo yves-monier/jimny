@@ -199,6 +199,7 @@ export default {
   props: {
     // total, index, sentence
     viewed: { type: Object, default: () => { } },
+    settings: { type: Object, default: () => { } },
   },
   components: { CustomScrollbar },
   // setup(_, { emit }) {
@@ -267,10 +268,10 @@ export default {
         let html;
         let getDict = true;
         if (getDict /*lemmaPos == "hleypa+so"*/) {
-          html = window.electronAPI.getDict(lemmaPos);
+          html = window.electronAPI.getDict(props.settings.wordsFolder, lemmaPos);
           let enrichedDict = enrichIcelandic(html.dict);
           html.dict = enrichedDict;
-          console.log(`enrichedHtml: ${enrichedDict}`)
+          // console.log(`enrichedHtml: ${enrichedDict}`)
         } else {
           html = { dict: `(2) File not found: ${lemmaPos}.json` }
         }
@@ -282,7 +283,7 @@ export default {
 
     watch(() => props.viewed.index, (/*newValue, oldValue*/) => {
       // console.log(`props.view has been updated: ${oldValue} => ${newValue}`);
-      if (props.viewed.autoplay) {
+      if (props.settings.autoplay) {
         if (props.viewed.sentence.audio) {
           if (sourceElement.value) {
             const dataUri = window.electronAPI.getSoundDataUri(props.viewed.sentence.audio);

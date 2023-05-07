@@ -18,6 +18,7 @@
     "cheerio": "1.0.0-rc.10",
     "core-js": "^3.6.5",
     "custom-vue-scrollbar": "^0.0.7",
+    "electron-settings": "^4.0.2",
     "vue": "^3.0.0"
   },
   "devDependencies": {

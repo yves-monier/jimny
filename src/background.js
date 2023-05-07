@@ -3,9 +3,9 @@
 import { app, protocol, BrowserWindow, ipcMain, dialog } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
-
 // const { load } = require('cheerio');
 import { load } from "cheerio";
+import electronSettings from 'electron-settings';
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
@@ -185,11 +185,26 @@ protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { secure: true, standard: true } }
 ]);
 
+const DEFAULT_SETTINGS = { autoplay: true, sentencesFile: "C:\\Dev\\droopy\\greynir\\jimny_sentences.json", wordsFolder: "C:\\Dev\\droopy\\greynir\\jimny_words", audioFolder: "C:\\Data\\Islandais\\samromur", autobrowse: false, autobrowseDuration: 5 };
+
 async function createWindow() {
 
-  ipcMain.on("get-sentences", (event) => {
+  ipcMain.on("get-settings", (event) => {
+    let ret = electronSettings.getSync();
+    ret = { ...DEFAULT_SETTINGS, ...ret };
+    console.log(`get-settings: ${JSON.stringify(ret)}`);
+    event.returnValue = ret;
+  });
+
+  ipcMain.on("set-settings", (event, jsonSettings) => {
+    console.log(`set-settings: ${JSON.stringify(jsonSettings)}`);
+    let settings = JSON.parse(jsonSettings);
+    electronSettings.set(settings);
+  });
+
+  ipcMain.on("get-sentences", (event, file) => {
     try {
-      let json = fs.readFileSync("C:/Dev/droopy/greynir/jimny_sentences.json");
+      let json = fs.readFileSync(file/*"C:/Dev/droopy/greynir/jimny_sentences.json"*/);
       let sentences = JSON.parse(json);
       // json = fs.readFileSync("C:/Dev/jimny/jimny_sentences_audio.json");
       // let sentencesAudio = JSON.parse(json);
@@ -201,8 +216,8 @@ async function createWindow() {
     }
   });
 
-  ipcMain.on("get-dict", (event, lemmaPos) => {
-    let f = path.join("C:/Dev/droopy/greynir/jimny_words", `${lemmaPos}.json`);
+  ipcMain.on("get-dict", (event, wordsFolder, lemmaPos) => {
+    let f = path.join(wordsFolder/*"C:/Dev/droopy/greynir/jimny_words"*/, `${lemmaPos}.json`);
     try {
       const jsonString = fs.readFileSync(f);
       let html = JSON.parse(jsonString);

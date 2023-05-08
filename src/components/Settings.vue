@@ -13,12 +13,14 @@ export default {
 
     let sentencesFileElement = ref(null);
 
-    let labels = reactive({ fr: { "select-file": "Choisir un fichier", "select-folder": "Choisir un répertoire" }, default: { "select-file": "Select file", "select-folder": "Select folder" } });
+    let labels = reactive({ fr: { "select-file": "Choisir un fichier", "select-folder": "Choisir un répertoire" }, is: { "select-file": "Veldu skrá", "select-folder": "Veldu möppu" }, default: { "select-file": "Select file", "select-folder": "Select folder" } });
 
     let lang = "default";
     const navigatorLanguage = navigator.language;
     if (navigatorLanguage.startsWith("fr")) {
       lang = "fr";
+    } else if (navigatorLanguage.startsWith("is")) {
+      lang = "is";
     }
     const language = ref(lang);
 

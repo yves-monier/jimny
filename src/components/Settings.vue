@@ -59,28 +59,28 @@ export default {
       </header>
       <div class="dialog-body">
         <p>
-          <label>Sentences file: {{ dialogSettings.sentencesFile }}</label>
+          <label><span class="dialog-field-title">Sentences file</span>{{ dialogSettings.sentencesFile }}</label>
           <input style="display: none;" ref="sentencesFileElement" type="file"
             @change="onFileChanged($event, 'sentencesFile')" />
           <button @click="sentencesFileElement.click()">{{ labels[language]["select-file"] }}</button>
         </p>
         <p>
-          <label>Words folder: {{ dialogSettings.wordsFolder }}</label>
+          <label><span class="dialog-field-title">Words folder</span>{{ dialogSettings.wordsFolder }}</label>
           <button @click="onChangeFolder($event, 'wordsFolder')">{{ labels[language]["select-folder"] }}</button>
         </p>
         <p>
-          <label>Audio folder: {{ dialogSettings.audioFolder }}</label>
+          <label><span class="dialog-field-title">Audio folder</span>{{ dialogSettings.audioFolder }}</label>
           <button @click="onChangeFolder($event, 'audioFolder')">{{ labels[language]["select-folder"] }}</button>
         </p>
         <p>
           <input type="checkbox" id="autoplay" name="autoplay" v-model="dialogSettings.autoplay">
-          <label for="autoplay">Play audio automatically</label>
+          <label for="autoplay"><span class="dialog-field-title-only">Play audio automatically</span></label>
         </p>
         <p>
           <input type="checkbox" id="autobrowse" name="autobrowse" v-model="dialogSettings.autobrowse" />
-          <label for="autobrowse">Browse sentences automatically</label>
-          <input type="number" min="1" max="60" v-model="dialogSettings.autobrowseDuration"
-            :disabled="dialogSettings.autobrowse ? null : 'disabled'">
+          <label for="autobrowse"><span class="dialog-field-title">Browse sentences automatically</span></label>
+          every <input type="number" min="1" max="60" v-model="dialogSettings.autobrowseDuration"
+            :disabled="dialogSettings.autobrowse ? null : 'disabled'"> seconds
         </p>
       </div>
       <footer>
@@ -110,6 +110,23 @@ export default {
   border: 1px solid #999;
   border-radius: 10px;
   background-color: white;
+
+  label .dialog-field-title-only {
+    font-weight: bold;
+  }
+
+  label .dialog-field-title {
+    font-weight: bold;
+
+    &:after {
+      content: ":";
+      margin-right: 10px;
+    }
+  }
+
+  button {
+    margin-left: 10px;
+  }
 }
 
 .dialog-close {
@@ -140,9 +157,5 @@ export default {
   justify-content: flex-end;
   width: 100%;
   padding: 10px;
-
-  button {
-    margin-left: 10px;
-  }
 }
 </style>

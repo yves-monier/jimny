@@ -215,20 +215,25 @@ export default {
     let audioElement = ref(null);
     let sourceElement = ref(null);
 
+    const playSentence = () => {
+      let promise = audioElement.value.play();
+      promise.then(() => { // console.log("Playing"); 
+      }).catch(err => {
+        console.error(`Cannot play: ${err}`);
+        let promise2 = audioElement.value.play();
+        promise2.then(() => { console.log("Playing (2)"); }).catch(err2 => {
+          console.error(`Cannot play (2): ${err2}`);
+        });
+      });
+    };
+
     const onListen = () => {
       if (!sourceElement.value.src || !sourceElement.value.src.startsWith("data")) {
         const dataUri = window.electronAPI.getSoundDataUri(props.viewed.sentence.audio);
-        /*
-        let source = document.createElement('source');
-        source.src = dataUri;
-        let audio = new Audio();
-        audio.appendChild(source);
-        audio.play();
-        */
         sourceElement.value.src = dataUri;
         audioElement.value.load();
       }
-      audioElement.value.play();
+      playSentence();
     };
 
     const onGreynirEnter = (index) => {
@@ -289,7 +294,7 @@ export default {
             const dataUri = window.electronAPI.getSoundDataUri(props.viewed.sentence.audio);
             sourceElement.value.src = dataUri;
             audioElement.value.load();
-            audioElement.value.play();
+            playSentence();
           } else {
             console.log("Problem!");
           }

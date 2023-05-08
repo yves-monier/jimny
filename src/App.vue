@@ -3,6 +3,7 @@
 import Search from "./components/Search";
 import SentenceViewer from "./components/SentenceViewer";
 import Settings from "./components/Settings";
+import Help from "./components/Help";
 import { computed, reactive, ref } from "vue";
 
 // const formatSize = (size) => {
@@ -20,6 +21,7 @@ export default {
     Search,
     SentenceViewer,
     Settings,
+    Help,
   },
   setup() {
     // const path = ref(app.getAppPath());
@@ -130,6 +132,14 @@ export default {
       settingsVisible.value = false;
     };
 
+    const helpVisible = ref(false);
+    const onHelp = () => {
+      helpVisible.value = true;
+    };
+    const onCloseHelp = () => {
+      helpVisible.value = false;
+    };
+
     const onSize = (large) => {
       stateViewer.large = large;
       if (large) {
@@ -234,7 +244,7 @@ export default {
 
     doStartTimeout();
 
-    return { sentences, stateViewer, settingsVisible, settings, onSettings, onCloseSettings, onSize, onStopTimeout, onStartTimeout, onSelectSentence, onNextSentence, onPause, flags, onToggleFlag };
+    return { sentences, stateViewer, helpVisible, onHelp, onCloseHelp, settingsVisible, settings, onSettings, onCloseSettings, onSize, onStopTimeout, onStartTimeout, onSelectSentence, onNextSentence, onPause, flags, onToggleFlag };
   },
 };
 </script>
@@ -258,10 +268,12 @@ export default {
       <button v-if="stateViewer.large" class="icon-button action-collapse" @click="onSize(false)"></button>
       <button v-else class="icon-button action-expand" @click="onSize(true)"></button>
       <button class="icon-button action-settings" @click="onSettings"></button>
+      <button class="icon-button action-help" @click="onHelp"></button>
     </div>
   </div>
   <SentenceViewer @stop-timeout="onStopTimeout" @start-timeout="onStartTimeout" :viewed="stateViewer" :settings="settings"/>
   <Settings v-if="settingsVisible" :settings="settings" @close="onCloseSettings" />
+  <Help v-if="helpVisible" @close="onCloseHelp" />
 </template>
 
 <style lang="scss" scoped>
@@ -383,6 +395,10 @@ export default {
 
   .action-settings {
     background-image: url(./assets/settings.svg);
+  }
+
+  .action-help {
+    background-image: url(./assets/help.svg);
   }
 
   .action-pause {

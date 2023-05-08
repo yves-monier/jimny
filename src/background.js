@@ -12,6 +12,8 @@ const isDevelopment = process.env.NODE_ENV !== "production";
 const path = require("path");
 const fs = require("fs");
 
+const shell = require('electron').shell;
+
 require("@electron/remote/main").initialize();
 
 const helpers = require("@/services/helpers.js");
@@ -192,6 +194,11 @@ async function createWindow() {
   ipcMain.on("get-settings", (event) => {
     let ret = electronSettings.getSync();
     ret = { ...DEFAULT_SETTINGS, ...ret };
+    if (!fs.existsSync(ret.sentencesFile)) {
+      ret.sentencesFile = "./data/jimny_sentences.json"
+      ret.wordsFolder = "./data/jimny_words"
+      ret.audioFolder = "./data/samromur"
+    }
     console.log(`get-settings: ${JSON.stringify(ret)}`);
     event.returnValue = ret;
   });
@@ -284,6 +291,11 @@ async function createWindow() {
     // Load the index.html when not in development
     win.loadURL("app://./index.html");
   }
+
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: 'deny' };
+  });
 }
 
 // Quit when all windows are closed.

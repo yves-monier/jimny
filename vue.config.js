@@ -5,6 +5,13 @@ module.exports = {
             preload: "src/preload.js",
             builderOptions: {
                 extraResources: ['src', 'src/res/'],
+                extraFiles: [
+                    {
+                      "from": "./data/",
+                      "to": "./data/",
+                      "filter": ["**/*"]
+                    }
+                  ]
             },
             // mainProcessFile: "src/background.js",
             // rendererProcessFile: "src/main.js",

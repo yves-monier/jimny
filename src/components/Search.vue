@@ -1,8 +1,7 @@
 <template>
     <!-- div class="form-group mt-4 mb-2 search" -->
     <div class="search">
-        <input ref="inputElement" type="text" id="leita" name="leita" :placeholder="`Leitaorð (${sentences.length})`"
-            v-model="store.input" />
+        <input ref="inputElement" type="text" id="leita" name="leita" placeholder="Leitaorð" v-model="store.input" />
         <!-- div v-if="store.results && store.results.length > 0" class="search-result-overlay" @click="onClose($event)" -->
         <div v-if="store.results && store.results.length > 0" class="search-result">
             <div class="search-close" @click="onClose"></div>
@@ -155,7 +154,7 @@ export default {
     li {
         cursor: default;
         padding: 2px 4px;
-        
+
         &:hover {
             background-color: #cfe0ff;
         }

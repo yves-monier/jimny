@@ -100,8 +100,6 @@ export default {
     let sentences = [];
     let total = 0;
     try {
-      // const jsonString = fs.readFileSync("C:/Dev/droopy/greynir/jimny_sentences.json");
-      // sentences = JSON.parse(jsonString);
       sentences = window.electronAPI.getSentences(settings.sentencesFile);
       total = sentences.length;
     } catch (err) {

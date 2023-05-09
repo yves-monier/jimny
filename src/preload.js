@@ -8,6 +8,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
   setSize: (w, h, showMenu) => ipcRenderer.send("set-size", w, h, showMenu),
   getSentences: (file) => ipcRenderer.sendSync("get-sentences", file),
   getDict: (wordsFolder, lemmaPos) => ipcRenderer.sendSync("get-dict", wordsFolder, lemmaPos),
-  getSoundDataUri: (sound) => ipcRenderer.sendSync("get-sound-data-uri", sound),
+  getSoundDataUri: (audioFolder, sound) => ipcRenderer.sendSync("get-sound-data-uri", audioFolder, sound),
   selectFolder: () => ipcRenderer.invoke('dialog:open-directory')
 });

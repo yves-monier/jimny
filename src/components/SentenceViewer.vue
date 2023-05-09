@@ -230,7 +230,7 @@ export default {
 
     const onListen = () => {
       if (!sourceElement.value.src || !sourceElement.value.src.startsWith("data")) {
-        const dataUri = window.electronAPI.getSoundDataUri(props.viewed.sentence.audio);
+        const dataUri = window.electronAPI.getSoundDataUri(props.settings.audioFolder, props.viewed.sentence.audio);
         sourceElement.value.src = dataUri;
         audioElement.value.load();
       }
@@ -292,7 +292,7 @@ export default {
       if (props.settings.autoplay) {
         if (props.viewed.sentence.audio) {
           if (sourceElement.value) {
-            const dataUri = window.electronAPI.getSoundDataUri(props.viewed.sentence.audio);
+            const dataUri = window.electronAPI.getSoundDataUri(props.settings.audioFolder, props.viewed.sentence.audio);
             sourceElement.value.src = dataUri;
             audioElement.value.load();
             playSentence("auto");

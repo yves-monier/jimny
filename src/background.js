@@ -211,11 +211,8 @@ async function createWindow() {
 
   ipcMain.on("get-sentences", (event, file) => {
     try {
-      let json = fs.readFileSync(file/*"C:/Dev/droopy/greynir/jimny_sentences.json"*/);
+      let json = fs.readFileSync(file);
       let sentences = JSON.parse(json);
-      // json = fs.readFileSync("C:/Dev/jimny/jimny_sentences_audio.json");
-      // let sentencesAudio = JSON.parse(json);
-      // sentences.push(...sentencesAudio);
       helpers.shuffleArray(sentences);
       event.returnValue = sentences;
     } catch (err) {
@@ -224,7 +221,7 @@ async function createWindow() {
   });
 
   ipcMain.on("get-dict", (event, wordsFolder, lemmaPos) => {
-    let f = path.join(wordsFolder/*"C:/Dev/droopy/greynir/jimny_words"*/, `${lemmaPos}.json`);
+    let f = path.join(wordsFolder, `${lemmaPos}.json`);
     try {
       const jsonString = fs.readFileSync(f);
       let html = JSON.parse(jsonString);
@@ -236,8 +233,8 @@ async function createWindow() {
     }
   });
 
-  ipcMain.on("get-sound-data-uri", (event, sound) => {
-    let f = path.join("C:/Data/Islandais/samromur", sound);
+  ipcMain.on("get-sound-data-uri", (event, audioFolder, sound) => {
+    let f = path.join(audioFolder, sound);
     try {
       const data = fs.readFileSync(f).toString("base64");
       const dataUri = `data:audio/flac;base64,${data}`;

@@ -215,7 +215,8 @@ export default {
     let audioElement = ref(null);
     let sourceElement = ref(null);
 
-    const playSentence = () => {
+    const playSentence = (mode) => {
+      console.log(`Play: ${mode}`);
       let promise = audioElement.value.play();
       promise.then(() => { // console.log("Playing"); 
       }).catch(err => {
@@ -233,7 +234,7 @@ export default {
         sourceElement.value.src = dataUri;
         audioElement.value.load();
       }
-      playSentence();
+      playSentence("manual");
     };
 
     const onGreynirEnter = (index) => {
@@ -294,7 +295,7 @@ export default {
             const dataUri = window.electronAPI.getSoundDataUri(props.viewed.sentence.audio);
             sourceElement.value.src = dataUri;
             audioElement.value.load();
-            playSentence();
+            playSentence("auto");
           } else {
             console.log("Problem!");
           }

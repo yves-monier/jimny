@@ -316,7 +316,7 @@ export default {
   <div :class="['sentence', viewed.large ? 'sentence-large' : 'sentence-small']" @mouseenter="$emit('stop-timeout')"
     @mouseleave="$emit('start-timeout')">
     <div :class="['texts', viewed.sentence.english || viewed.sentence.french ? 'with-target' : 'without-target']">
-      <div class="source-text icelandic" :title="`sentence no. ${viewed.sentence.id}`">
+      <div class="source-text icelandic" :title="`setningin #${viewed.sentence.id}`">
         {{ viewed.sentence.icelandic }}
         <button v-if="viewed.sentence.audio" class="audio" @click="onListen"></button>
         <span class="audio-controls">

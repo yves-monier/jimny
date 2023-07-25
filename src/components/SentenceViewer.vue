@@ -218,7 +218,8 @@ export default {
     const playSentence = (mode) => {
       console.log(`Play: ${mode}`);
       let promise = audioElement.value.play();
-      promise.then(() => { // console.log("Playing"); 
+      promise.then(() => { 
+        // console.log("Playing"); 
       }).catch(err => {
         console.error(`Cannot play: ${err}`);
         let promise2 = audioElement.value.play();
@@ -292,6 +293,9 @@ export default {
       if (props.settings.autoplay) {
         if (props.viewed.sentence.audio) {
           if (sourceElement.value) {
+            // // audioElement.value.oncanplay = function() {
+            // //   playSentence("auto");
+            // // };
             const dataUri = window.electronAPI.getSoundDataUri(props.settings.audioFolder, props.viewed.sentence.audio);
             sourceElement.value.src = dataUri;
             audioElement.value.load();

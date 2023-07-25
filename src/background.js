@@ -187,7 +187,7 @@ protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { secure: true, standard: true } }
 ]);
 
-const DEFAULT_SETTINGS = { autoplay: true, sentencesFile: "C:\\Dev\\droopy\\greynir\\jimny_sentences.json", wordsFolder: "C:\\Dev\\droopy\\greynir\\jimny_words", audioFolder: "C:\\Data\\Islandais\\samromur", autobrowse: false, autobrowseDuration: 5 };
+const DEFAULT_SETTINGS = { autoplay: true, sentencesFile: "C:\\Dev\\droopy\\greynir\\jimny_sentences.json", wordsFolder: "C:\\Dev\\droopy\\greynir\\jimny_words", audioFolder: "C:\\Data\\Islandais\\samromur", autobrowse: false, autobrowseDuration: 6 };
 
 async function createWindow() {
 
@@ -204,7 +204,7 @@ async function createWindow() {
   });
 
   ipcMain.on("set-settings", (event, jsonSettings) => {
-    console.log(`set-settings: ${JSON.stringify(jsonSettings)}`);
+    // console.log(`set-settings: ${JSON.stringify(jsonSettings)}`);
     let settings = JSON.parse(jsonSettings);
     electronSettings.set(settings);
   });
@@ -235,11 +235,13 @@ async function createWindow() {
 
   ipcMain.on("get-sound-data-uri", (event, audioFolder, sound) => {
     let f = path.join(audioFolder, sound);
+    f = `${f}.mp3`;
     try {
       const data = fs.readFileSync(f).toString("base64");
       const dataUri = `data:audio/flac;base64,${data}`;
       event.returnValue = dataUri;
     } catch (err) {
+      console.log(`get-sound-data-uri: ${err}`)
       event.returnValue = "";
     }
   });

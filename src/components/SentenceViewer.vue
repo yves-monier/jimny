@@ -208,7 +208,7 @@ export default {
   //   };
   //   return { onFileClick };
   // },
-  setup(props) {
+  setup(props, context) {
     //
     let dictElements = ref(null);
     //
@@ -218,8 +218,9 @@ export default {
     const playSentence = (mode) => {
       console.log(`Play: ${mode}`);
       let promise = audioElement.value.play();
-      promise.then(() => { 
-        // console.log("Playing"); 
+      promise.then(() => {
+        // console.log(`Playing, duration=${audioElement.value.duration}`);
+        context.emit("start-timeout", 2 + audioElement.value.duration);
       }).catch(err => {
         console.error(`Cannot play: ${err}`);
         let promise2 = audioElement.value.play();

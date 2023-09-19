@@ -157,14 +157,16 @@ export default {
       // console.log(`Stop timeout`)
     };
 
-    const doStartTimeout = () => {
+    const doStartTimeout = (arg) => {
       if (settings.autobrowse) {
         if (intervalId !== undefined) {
           clearInterval(intervalId);
         }
+        let delay = 1000 * Math.max(settings.autobrowseDuration, arg || settings.autobrowseDuration);
+        // console.log(`doStartTimeout ${delay} ms`)
         intervalId = setInterval(() => {
           doNextSentence(1);
-        }, 1000 * settings.autobrowseDuration);
+        }, delay);
       }
     };
 
@@ -214,9 +216,9 @@ export default {
       }
     };
 
-    const onStartTimeout = () => {
-      // console.log(`Start timeout`)
-      doStartTimeout();
+    const onStartTimeout = (arg) => {
+      // console.log(`Start timeout: ${arg}`)
+      doStartTimeout(arg);
     };
 
     const onNextSentence = (step) => {
@@ -269,7 +271,8 @@ export default {
       <button class="icon-button action-help" @click="onHelp"></button>
     </div>
   </div>
-  <SentenceViewer @stop-timeout="onStopTimeout" @start-timeout="onStartTimeout" :viewed="stateViewer" :settings="settings"/>
+  <SentenceViewer @stop-timeout="onStopTimeout" @start-timeout="onStartTimeout" :viewed="stateViewer"
+    :settings="settings" />
   <Settings v-if="settingsVisible" :settings="settings" @close="onCloseSettings" />
   <Help v-if="helpVisible" @close="onCloseHelp" />
 </template>

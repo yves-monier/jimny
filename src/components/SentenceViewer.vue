@@ -330,8 +330,8 @@ export default {
           </audio></span>
       </div>
       <div v-if="viewed.sentence.english || viewed.sentence.french" class="target-texts">
-        <div v-if="viewed.sentence.english" class="english">{{ viewed.sentence.english }}</div>
-        <div v-if="viewed.sentence.french" class="french">{{ viewed.sentence.french }}</div>
+        <div v-if="viewed.sentence.english" class="english" :title="`sentence #${viewed.sentence.id}`">{{ viewed.sentence.english }}</div>
+        <div v-if="viewed.sentence.french" class="french" :title="`phrase #${viewed.sentence.id}`">{{ viewed.sentence.french }}</div>
       </div>
     </div>
     <div v-if="viewed.sentence.greynir" class="greynir-analysis">
@@ -442,6 +442,7 @@ header {
   border: 1px solid #999;
   margin-left: 5px;
   margin-right: 5px;
+  padding-left: 10px;
   flex: 0 0 calc(100vw - 10px);
   position: relative;
   display: flex;
@@ -479,6 +480,10 @@ header {
   display: inline-block;
   margin-right: 0.3rem;
   border-bottom: 2px solid transparent;
+
+  &:first-child .greynir-lemma {
+    text-transform: capitalize;
+  }
 }
 
 .current-greynir-word {

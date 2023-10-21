@@ -273,6 +273,19 @@ export default {
         let lemma = greynir.lemma;
         let pos = greynir.pos.replaceAll('"', "");
         let lemmaPos = `${lemma}+${pos}`;
+        let fall;
+        if (["no", "lo", "to", "fn", "pfn"].includes(pos)) {
+          let terminal = greynir.terminal;
+          if (terminal.indexOf("_nf") >= 0) {
+            fall = "Nf."
+          } else if (terminal.indexOf("_þf") >= 0) {
+            fall = "þf."
+          } else if (terminal.indexOf("_þgf") >= 0) {
+            fall = "þgf."
+          } else if (terminal.indexOf("_ef") >= 0) {
+            fall = "Ef."
+          }
+        }
         let html;
         let getDict = true;
         if (getDict /*lemmaPos == "hleypa+so"*/) {
@@ -283,7 +296,7 @@ export default {
         } else {
           html = { dict: `(2) File not found: ${lemmaPos}.json` }
         }
-        d.push([lemmaPos, html]);
+        d.push([lemmaPos, html, fall]);
       }
       // return [...d]; // [ [lemma+pos, dict], ..., [lemma+pos, dict] ]
       return d; // [ [lemma+pos, dict], ..., [lemma+pos, dict] ]
@@ -330,16 +343,18 @@ export default {
           </audio></span>
       </div>
       <div v-if="viewed.sentence.english || viewed.sentence.french" class="target-texts">
-        <div v-if="viewed.sentence.english" class="english" :title="`sentence #${viewed.sentence.id}`">{{ viewed.sentence.english }}</div>
-        <div v-if="viewed.sentence.french" class="french" :title="`phrase #${viewed.sentence.id}`">{{ viewed.sentence.french }}</div>
+        <div v-if="viewed.sentence.english" class="english" :title="`sentence #${viewed.sentence.id}`">{{
+          viewed.sentence.english }}</div>
+        <div v-if="viewed.sentence.french" class="french" :title="`phrase #${viewed.sentence.id}`">{{
+          viewed.sentence.french }}</div>
       </div>
     </div>
     <div v-if="viewed.sentence.greynir" class="greynir-analysis">
       <div v-for="(greynir, index) in viewed.sentence.greynir" :key="`greynir-${index}`"
-        :class="['greynir-word', (index == current) && 'current-greynir-word']" @mouseenter="onGreynirEnter(index)"
+        :class="['greynir-word', (index == current) && 'current-greynir-word']"
+        :title="`${wordCategories[greynir.pos] || '???'} - ${greynir.terminal}`" @mouseenter="onGreynirEnter(index)"
         @mouseleave="onGreynirLeave(index)">
-        <span class="greynir-lemma">{{ greynir.lemma }}</span><span class="greynir-pos"
-          :title="wordCategories[greynir.pos] || '???'">{{ greynir.pos }}</span>
+        <span class="greynir-lemma">{{ greynir.lemma }}</span><span class="greynir-pos">{{ greynir.pos }}</span><span v-if="dict[index][2]" class="greynir-fall">{{ dict[index][2] }}</span>
       </div>
     </div>
     <div v-if="dict" class="dict">
@@ -498,6 +513,14 @@ header {
 }
 
 .greynir-lemma::after {
+  content: "+";
+}
+
+.greynir-fall {
+  font-weight: bold;
+}
+
+.greynir-fall::before {
   content: "+";
 }
 

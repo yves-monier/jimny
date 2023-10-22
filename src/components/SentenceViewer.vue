@@ -196,6 +196,19 @@ function enrichIcelandic(html) {
 }
 
 export default {
+  mounted() {
+    console.log("SentenceViewer mounted");
+    const greynirWords = document.querySelectorAll(".greynir-word");
+    greynirWords.forEach(function (word) {
+      if (word.nextSibling) {
+        const blank = document.createElement("span");
+        blank.innerHTML = " ";
+        blank.classList.add("greynir-blank");
+        word.parentNode.insertBefore(blank, word.nextSibling);
+      }
+    });
+  },
+
   props: {
     // total, index, sentence
     viewed: { type: Object, default: () => { } },
@@ -246,16 +259,7 @@ export default {
     };
     const onGreynirLeave = (/*index*/) => {
       // console.log(`onGreynirLeave: ${index}`)
-      current.value = -1;
-    };
-
-    const onDictEnter = (index) => {
-      // console.log(`onDictEnter: ${index}`)
-      current.value = index;
-    };
-    const onDictLeave = (/*index*/) => {
-      // console.log(`onDictLeave: ${index}`)
-      current.value = -1;
+      // current.value = -1;
     };
 
     const onDictNav = (step = 1) => {
@@ -263,7 +267,7 @@ export default {
       dictElements.value[current.value].scrollIntoView();
     };
 
-    const current = ref(-1);
+    const current = ref(0); // ref(-1);
 
     const dict = computed(() => {
       if (!props.viewed.sentence.greynir) return undefined;
@@ -325,7 +329,7 @@ export default {
       } */
     });
 
-    return { dict, current, onListen, onGreynirEnter, onGreynirLeave, onDictEnter, onDictLeave, onDictNav, dictElements, audioElement, sourceElement, wordCategories };
+    return { dict, current, onListen, onGreynirEnter, onGreynirLeave, onDictNav, dictElements, audioElement, sourceElement, wordCategories };
   },
 };
 </script>
@@ -354,13 +358,13 @@ export default {
         :class="['greynir-word', (index == current) && 'current-greynir-word']"
         :title="`${wordCategories[greynir.pos] || '???'} - ${greynir.terminal}`" @mouseenter="onGreynirEnter(index)"
         @mouseleave="onGreynirLeave(index)">
-        <span class="greynir-lemma">{{ greynir.lemma }}</span><span class="greynir-pos">{{ greynir.pos }}</span><span v-if="dict[index][2]" class="greynir-fall">{{ dict[index][2] }}</span>
+        <span class="greynir-lemma">{{ greynir.lemma }}</span><span class="greynir-pos">+{{ greynir.pos }}</span><span
+          v-if="dict[index][2]" class="greynir-fall">+{{ dict[index][2] }}</span>
       </div>
     </div>
     <div v-if="dict" class="dict">
       <div v-for="(entry, index) in dict" :key="index" ref="dictElements"
-        :class="['dict-entry', (index == current) && 'current-dict-entry']" @mouseenter="onDictEnter(index)"
-        @mouseleave="onDictLeave(index)">
+        :class="['dict-entry', (index == current) && 'current-dict-entry']">
         <button v-if="index > 0" class="dict-nav dict-prev" @click="onDictNav(-1)">{{
           viewed.sentence.greynir[index -
             1].lemma }}</button>
@@ -380,7 +384,7 @@ export default {
 .sentence {
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -439,6 +443,10 @@ header {
 
 .greynir-analysis {
   padding: 0.33rem;
+  padding-bottom: 0;
+  position: relative;
+  z-index: 1;
+  display: flex;
 }
 
 .dict {
@@ -447,6 +455,9 @@ header {
   overflow: hidden;
   display: flex;
   flex-direction: row;
+  position: relative;
+  z-index: 0;
+  top: -1px;
 }
 
 .sentence-small .dict {
@@ -454,17 +465,16 @@ header {
 }
 
 .dict-entry {
-  border: 1px solid #999;
-  margin-left: 5px;
-  margin-right: 5px;
+  border-top: 1px solid #999;
   padding-left: 10px;
-  flex: 0 0 calc(100vw - 10px);
+  flex: 0 0 100%;
   position: relative;
-  display: flex;
+  display: none;
 }
 
 .current-dict-entry {
   background-color: #eee;
+  display: flex;
 }
 
 .dict-nav {
@@ -489,21 +499,35 @@ header {
   right: 0;
 }
 
-.greynir-analysis {}
-
 .greynir-word {
   display: inline-block;
-  margin-right: 0.3rem;
-  border-bottom: 2px solid transparent;
+  padding: 3px 8px 8px 8px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: transparent;
+  position: relative;
 
   &:first-child .greynir-lemma {
     text-transform: capitalize;
   }
+
+  &+span {
+    margin-right: 0.3rem;
+  }
+
+  &:not(:first-child) {
+    left: -5px;
+  }
 }
 
 .current-greynir-word {
-  // text-decoration: underline;
-  border-bottom: 2px solid #999;
+  background-color: #eee;
+  border-left-color: #999;
+  border-top-color: #999;
+  border-right-color: #999;
+  border-bottom-color: #eee;
 }
 
 .greynir-lemma {}
@@ -512,16 +536,8 @@ header {
   font-weight: bold;
 }
 
-.greynir-lemma::after {
-  content: "+";
-}
-
 .greynir-fall {
   font-weight: bold;
-}
-
-.greynir-fall::before {
-  content: "+";
 }
 
 .scrollbar__wrapper {

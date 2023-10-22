@@ -5,6 +5,7 @@ import SentenceViewer from "./components/SentenceViewer";
 import Settings from "./components/Settings";
 import Help from "./components/Help";
 import { computed, reactive, ref } from "vue";
+import { useKeypress } from 'vue3-keypress'
 
 // const formatSize = (size) => {
 //   var i = Math.floor(Math.log(size) / Math.log(1024));
@@ -24,56 +25,27 @@ export default {
     Help,
   },
   setup() {
-    // const path = ref(app.getAppPath());
-    // const files = computed(() => {
-    //   const fileNames = fs.readdirSync(path.value);
-    //   return fileNames
-    //     .map((file) => {
-    //       try {
-    //         const stats = fs.statSync(pathModule.join(path.value, file));
-    //         return {
-    //           name: file,
-    //           size: stats.isFile() ? formatSize(stats.size ?? 0) : null,
-    //           directory: stats.isDirectory(),
-    //         };
-    //       } catch (error) {
-    //         return {
-    //           name: file,
-    //           size: "",
-    //           directory: false,
-    //         };
-    //       }
-    //     })
-    //     .sort((a, b) => {
-    //       if (a.directory === b.directory) {
-    //         return a.name.localeCompare(b.name);
-    //       }
-    //       return a.directory ? -1 : 1;
-    //     });
-    // });
+    const onLeft = () => {
+      console.log("left pressed");
+    };
 
-    // const back = () => {
-    //   path.value = pathModule.dirname(path.value);
-    //   console.log(`path.value: ${path.value}`);
-    // };
-    // const open = (folder) => {
-    //   path.value = pathModule.join(path.value, folder);
-    // };
-    // const searchString = ref("");
-    // const filteredFiles = computed(() => {
-    //   return searchString.value
-    //     ? files.value.filter((s) => s.name.startsWith(searchString.value))
-    //     : files.value;
-    // });
-    //
-    // return {
-    //   path,
-    //   open,
-    //   back,
-    //   files,
-    //   searchString,
-    //   filteredFiles,
-    // };
+    const onRight = () => {
+      console.log("right pressed");
+    };
+
+    useKeypress({
+      keyEvent: "keyup",
+      keyBinds: [
+        {
+          keyCode: 37,
+          success: onLeft,
+        },
+        {
+          keyCode: 39,
+          success: onRight,
+        },
+      ],
+    });
 
     const flags = reactive({ FR: "any", UK: "any", audio: "any" });
 
@@ -256,7 +228,6 @@ export default {
       <div :class="['flag', 'flag-UK', `flag-${flags['UK']}`]" @click="onToggleFlag($event, 'UK')"></div>
       <div :class="['flag', 'flag-audio', `flag-${flags['audio']}`]" @click="onToggleFlag($event, 'audio')"></div>
     </div>
-    <Search class="toolbar-item  search" :sentences="sentences" @select-sentence="onSelectSentence" />
     <div class="toolbar-item nav">
       <span class="nav-index">{{ 1 + stateViewer.index }} / {{ stateViewer.total
       }}</span>
@@ -264,6 +235,7 @@ export default {
       <button class="icon-button nav-next" @click="onNextSentence(1)"></button>
       <button class="icon-button nav-pause" :disabled="settings.autoplay ? null : 'disabled'" @click="onPause"></button>
     </div>
+    <Search class="toolbar-item  search" :sentences="sentences" @select-sentence="onSelectSentence" />
     <div class="toolbar-item actions">
       <button v-if="stateViewer.large" class="icon-button action-collapse" @click="onSize(false)"></button>
       <button v-else class="icon-button action-expand" @click="onSize(true)"></button>

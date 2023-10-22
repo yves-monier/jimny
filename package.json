@@ -19,7 +19,8 @@
     "core-js": "^3.6.5",
     "custom-vue-scrollbar": "^0.0.7",
     "electron-settings": "^4.0.2",
-    "vue": "^3.0.0"
+    "vue": "^3.0.0",
+    "vue3-keypress": "^4.0.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.12",

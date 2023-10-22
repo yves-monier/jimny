@@ -10419,6 +10419,11 @@
     "@vue/server-renderer" "3.2.47"
     "@vue/shared" "3.2.47"
 
+"vue3-keypress@^4.0.1":
+  "integrity" "sha512-oKxLpVsQq1iosuwi38fbH+K2NL2HqbFT8U7yE1fzxcUB0Mup1vS7OcnNMqkgv+FHFJTNvlYAOwLctVK/ahz6Ng=="
+  "resolved" "https://registry.npmjs.org/vue3-keypress/-/vue3-keypress-4.0.1.tgz"
+  "version" "4.0.1"
+
 "watchpack-chokidar2@^2.0.1":
   "integrity" "sha512-nCFfBIPKr5Sh61s4LPpy1Wtfi0HE8isJ3d2Yb5/Ppw2P2B/3eVSEBjKfN0fmHJSK14+31KwMKmcrzs2GM4P0Ww=="
   "resolved" "https://registry.npmjs.org/watchpack-chokidar2/-/watchpack-chokidar2-2.0.1.tgz"

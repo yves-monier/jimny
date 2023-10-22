@@ -224,15 +224,11 @@ export default {
   // },
   setup(props, context) {
     const onLeft = () => {
-      if (current.value > 0) {
-        current.value -= 1;
-      }
+        setCurrent(current.value - 1);
     };
 
     const onRight = () => {
-      if (current.value < props.viewed.sentence.greynir.length-1) {
-        current.value += 1;
-      }
+        setCurrent(current.value + 1);
     };
 
     useKeypress({
@@ -251,6 +247,8 @@ export default {
 
     //
     let dictElements = ref(null);
+    let analysisElement = ref(null);
+    let wordElements = ref(null);
     //
     let audioElement = ref(null);
     let sourceElement = ref(null);
@@ -279,22 +277,34 @@ export default {
       playSentence("manual");
     };
 
-    const onGreynirEnter = (index) => {
-      // console.log(`onGreynirEnter: ${index}`)
+    const analysisTranslate = 0;
+
+    const setCurrent = (index) => {
+      if (index < 0 || index >= props.viewed.sentence.greynir.length) {
+        console.log(`setCurrent ${index}: ignored`);
+        return;
+      }
       current.value = index;
-      dictElements.value[index].scrollIntoView();
+      const analysisRect = analysisElement.value.getBoundingClientRect();
+      console.log(`analysis: ${JSON.stringify(analysisRect)} `);
+      const wordRect = wordElements.value[index].getBoundingClientRect();
+      console.log(`word: ${JSON.stringify(wordRect)} `);
+      if (wordRect.x + wordRect.width >= analysisRect.width - analysisTranslate) {
+        console.log(`Need translate left ${(analysisRect.width - analysisTranslate) - (wordRect.x + wordRect.width)}`);
+      } else if (wordRect.x + analysisTranslate < 0) {
+        console.log(`Need translate right ${-(wordRect.x + analysisTranslate)}`);
+      }
     };
-    const onGreynirLeave = (/*index*/) => {
-      // console.log(`onGreynirLeave: ${index}`)
-      // current.value = -1;
+
+    const onGreynirEnter = (index) => {
+      setCurrent(index);
     };
 
     const onDictNav = (step = 1) => {
-      current.value = current.value + step;
-      dictElements.value[current.value].scrollIntoView();
+      setCurrent(current.value + step);
     };
 
-    const current = ref(0); // ref(-1);
+    const current = ref(0);
 
     const dict = computed(() => {
       if (!props.viewed.sentence.greynir) return undefined;
@@ -323,7 +333,7 @@ export default {
           html = window.electronAPI.getDict(props.settings.wordsFolder, lemmaPos);
           let enrichedDict = enrichIcelandic(html.dict);
           html.dict = enrichedDict;
-          // console.log(`enrichedHtml: ${enrichedDict}`)
+          // console.log(`enrichedHtml: ${ enrichedDict } `)
         } else {
           html = { dict: `(2) File not found: ${lemmaPos}.json` }
         }
@@ -334,7 +344,7 @@ export default {
     });
 
     watch(() => props.viewed.index, (/*newValue, oldValue*/) => {
-      // console.log(`props.view has been updated: ${oldValue} => ${newValue}`);
+      // console.log(`props.view has been updated: ${ oldValue } => ${ newValue } `);
       if (props.settings.autoplay) {
         if (props.viewed.sentence.audio) {
           if (sourceElement.value) {
@@ -356,7 +366,7 @@ export default {
       } */
     });
 
-    return { dict, current, onListen, onGreynirEnter, onGreynirLeave, onDictNav, dictElements, audioElement, sourceElement, wordCategories };
+    return { dict, current, onListen, onGreynirEnter, onDictNav, dictElements, analysisElement, wordElements, audioElement, sourceElement, wordCategories };
   },
 };
 </script>
@@ -380,11 +390,10 @@ export default {
           viewed.sentence.french }}</div>
       </div>
     </div>
-    <div v-if="viewed.sentence.greynir" class="greynir-analysis">
-      <div v-for="(greynir, index) in viewed.sentence.greynir" :key="`greynir-${index}`"
+    <div v-if="viewed.sentence.greynir" class="greynir-analysis" ref="analysisElement">
+      <div v-for="(greynir, index) in viewed.sentence.greynir" :key="`greynir-${index}`" ref="wordElements"
         :class="['greynir-word', (index == current) && 'current-greynir-word']"
-        :title="`${wordCategories[greynir.pos] || '???'} - ${greynir.terminal}`" @mouseenter="onGreynirEnter(index)"
-        @mouseleave="onGreynirLeave(index)">
+        :title="`${wordCategories[greynir.pos] || '???'} - ${greynir.terminal}`" @mouseenter="onGreynirEnter(index)">
         <span class="greynir-lemma">{{ greynir.lemma }}</span><span class="greynir-pos">+{{ greynir.pos }}</span><span
           v-if="dict[index][2]" class="greynir-fall">+{{ dict[index][2] }}</span>
       </div>

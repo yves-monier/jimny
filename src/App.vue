@@ -25,24 +25,24 @@ export default {
     Help,
   },
   setup() {
-    const onLeft = () => {
-      console.log("left pressed");
+    const onUp = () => {
+      onNextSentence(1);
     };
 
-    const onRight = () => {
-      console.log("right pressed");
+    const onDown = () => {
+      onNextSentence(-1);
     };
 
     useKeypress({
       keyEvent: "keyup",
       keyBinds: [
         {
-          keyCode: 37,
-          success: onLeft,
+          keyCode: 40,
+          success: onDown,
         },
         {
-          keyCode: 39,
-          success: onRight,
+          keyCode: 38,
+          success: onUp,
         },
       ],
     });

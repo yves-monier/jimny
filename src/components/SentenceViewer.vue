@@ -5,6 +5,7 @@ import { computed, ref, watch } from 'vue'
 import CustomScrollbar from 'custom-vue-scrollbar';
 import 'custom-vue-scrollbar/dist/style.css';
 import { load } from "cheerio";
+import { useKeypress } from 'vue3-keypress'
 
 // from https://greynir.is/doc/terminals.html
 const wordCategories = {
@@ -222,6 +223,32 @@ export default {
   //   return { onFileClick };
   // },
   setup(props, context) {
+    const onLeft = () => {
+      if (current.value > 0) {
+        current.value -= 1;
+      }
+    };
+
+    const onRight = () => {
+      if (current.value < props.viewed.sentence.greynir.length-1) {
+        current.value += 1;
+      }
+    };
+
+    useKeypress({
+      keyEvent: "keyup",
+      keyBinds: [
+        {
+          keyCode: 37,
+          success: onLeft,
+        },
+        {
+          keyCode: 39,
+          success: onRight,
+        },
+      ],
+    });
+
     //
     let dictElements = ref(null);
     //

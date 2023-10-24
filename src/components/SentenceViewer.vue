@@ -223,12 +223,21 @@ export default {
   //   return { onFileClick };
   // },
   setup(props, context) {
+
+    // https://www.telerik.com/blogs/passing-variables-to-css-on-a-vue-component
+    const translateX = ref("0");
+    const cssVars = computed(() => {
+      return {
+        '--translateX': translateX.value
+      }
+    });
+
     const onLeft = () => {
-        setCurrent(current.value - 1);
+      setCurrent(current.value - 1);
     };
 
     const onRight = () => {
-        setCurrent(current.value + 1);
+      setCurrent(current.value + 1);
     };
 
     useKeypress({
@@ -289,11 +298,15 @@ export default {
       console.log(`analysis: ${JSON.stringify(analysisRect)} `);
       const wordRect = wordElements.value[index].getBoundingClientRect();
       console.log(`word: ${JSON.stringify(wordRect)} `);
+      let tx = 0;
       if (wordRect.x + wordRect.width >= analysisRect.width - analysisTranslate) {
-        console.log(`Need translate left ${(analysisRect.width - analysisTranslate) - (wordRect.x + wordRect.width)}`);
+        tx = (analysisRect.width - analysisTranslate) - (wordRect.x + wordRect.width)
+        console.log(`Need translate left ${tx}`);
       } else if (wordRect.x + analysisTranslate < 0) {
-        console.log(`Need translate right ${-(wordRect.x + analysisTranslate)}`);
+        tx = -(wordRect.x + analysisTranslate)
+        console.log(`Need translate right ${tx}`);
       }
+      translateX.value = `${tx}px`;
     };
 
     const onGreynirEnter = (index) => {
@@ -366,7 +379,7 @@ export default {
       } */
     });
 
-    return { dict, current, onListen, onGreynirEnter, onDictNav, dictElements, analysisElement, wordElements, audioElement, sourceElement, wordCategories };
+    return { cssVars, dict, current, onListen, onGreynirEnter, onDictNav, dictElements, analysisElement, wordElements, audioElement, sourceElement, wordCategories };
   },
 };
 </script>
@@ -390,7 +403,7 @@ export default {
           viewed.sentence.french }}</div>
       </div>
     </div>
-    <div v-if="viewed.sentence.greynir" class="greynir-analysis" ref="analysisElement">
+    <div :style="cssVars" v-if="viewed.sentence.greynir" class="greynir-analysis" ref="analysisElement">
       <div v-for="(greynir, index) in viewed.sentence.greynir" :key="`greynir-${index}`" ref="wordElements"
         :class="['greynir-word', (index == current) && 'current-greynir-word']"
         :title="`${wordCategories[greynir.pos] || '???'} - ${greynir.terminal}`" @mouseenter="onGreynirEnter(index)">

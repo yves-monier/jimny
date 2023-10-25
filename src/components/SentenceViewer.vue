@@ -1,7 +1,7 @@
 <script>
 // import fs from "fs";
 // import path from "path";
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted, onUpdated } from 'vue'
 import CustomScrollbar from 'custom-vue-scrollbar';
 import 'custom-vue-scrollbar/dist/style.css';
 import { load } from "cheerio";
@@ -197,19 +197,6 @@ function enrichIcelandic(html) {
 }
 
 export default {
-  mounted() {
-    console.log("SentenceViewer mounted");
-    const greynirWords = document.querySelectorAll(".greynir-word");
-    greynirWords.forEach(function (word) {
-      if (word.nextSibling) {
-        const blank = document.createElement("span");
-        blank.innerHTML = " ";
-        blank.classList.add("greynir-blank");
-        word.parentNode.insertBefore(blank, word.nextSibling);
-      }
-    });
-  },
-
   props: {
     // total, index, sentence
     viewed: { type: Object, default: () => { } },
@@ -262,6 +249,30 @@ export default {
     let audioElement = ref(null);
     let sourceElement = ref(null);
 
+    let greynirWordsInfo;
+    let greynirWordsInfoNeedsUpdate = true;
+
+    const updateGreynirWordsInfo = () => {
+      // console.log("Update greynirWordsInfo");
+      greynirWordsInfo = [];
+      for (let ii = 0; ii < props.viewed.sentence.greynir.length; ii++) {
+        greynirWordsInfo.push({ left: wordElements.value[ii].offsetLeft, width: wordElements.value[ii].offsetWidth });
+      }
+      greynirWordsInfoNeedsUpdate = false;
+    };
+
+    onMounted(() => {
+      // console.log("SentenceViewer mounted");
+      updateGreynirWordsInfo();
+    });
+
+    onUpdated(() => {
+      // console.log("SentenceViewer updated");
+      if (greynirWordsInfoNeedsUpdate) {
+        updateGreynirWordsInfo();
+      }
+    });
+
     const playSentence = (mode) => {
       console.log(`Play: ${mode}`);
       let promise = audioElement.value.play();
@@ -286,7 +297,7 @@ export default {
       playSentence("manual");
     };
 
-    const analysisTranslate = 0;
+    let currentTx = 0;
 
     const setCurrent = (index) => {
       if (index < 0 || index >= props.viewed.sentence.greynir.length) {
@@ -294,19 +305,24 @@ export default {
         return;
       }
       current.value = index;
-      const analysisRect = analysisElement.value.getBoundingClientRect();
-      console.log(`analysis: ${JSON.stringify(analysisRect)} `);
-      const wordRect = wordElements.value[index].getBoundingClientRect();
-      console.log(`word: ${JSON.stringify(wordRect)} `);
+      const menuWidth = analysisElement.value.offsetWidth;
+      // const word = wordElements.value[index].textContent;
+      // const wordLeft = wordElements.value[index].offsetLeft;
+      // const wordWidth = wordElements.value[index].offsetWidth;
+      const wordLeft = greynirWordsInfo[index].left;
+      const wordWidth = greynirWordsInfo[index].width;
       let tx = 0;
-      if (wordRect.x + wordRect.width >= analysisRect.width - analysisTranslate) {
-        tx = (analysisRect.width - analysisTranslate) - (wordRect.x + wordRect.width)
-        console.log(`Need translate left ${tx}`);
-      } else if (wordRect.x + analysisTranslate < 0) {
-        tx = -(wordRect.x + analysisTranslate)
-        console.log(`Need translate right ${tx}`);
+      // let status;
+      if (wordLeft + wordWidth + currentTx >= menuWidth) {
+        tx = menuWidth - (wordLeft + wordWidth + currentTx);
+        // status = `=> translate left ${tx}`;
+      } else if (wordLeft + currentTx < 0) {
+        tx = -(wordLeft + currentTx);
+        // status = `=> translate right ${tx}`;
       }
-      translateX.value = `${tx}px`;
+      currentTx += tx;
+      // console.log(`menu width: ${menuWidth} ${word}: ${wordLeft}+${wordWidth}=${wordLeft + wordWidth} currentTx: ${currentTx} ${status || ""}`);
+      translateX.value = `${currentTx}px`;
     };
 
     const onGreynirEnter = (index) => {
@@ -357,7 +373,10 @@ export default {
     });
 
     watch(() => props.viewed.index, (/*newValue, oldValue*/) => {
-      // console.log(`props.view has been updated: ${ oldValue } => ${ newValue } `);
+      // console.log(`props.view.index has been updated: ${oldValue} => ${newValue} `);
+      greynirWordsInfoNeedsUpdate = true;
+      current.value = 0;
+
       if (props.settings.autoplay) {
         if (props.viewed.sentence.audio) {
           if (sourceElement.value) {
@@ -496,6 +515,9 @@ header {
   position: relative;
   z-index: 1;
   display: flex;
+  // https://danielcwilson.com/blog/2017/06/dynamic-css-variables/
+  // https://www.telerik.com/blogs/passing-variables-to-css-on-a-vue-component
+  transform: translateX(var(--translateX));
 }
 
 .dict {
@@ -579,7 +601,9 @@ header {
   border-bottom-color: #eee;
 }
 
-.greynir-lemma {}
+.greynir-lemma {
+  white-space: nowrap;
+}
 
 .greynir-pos {
   font-weight: bold;

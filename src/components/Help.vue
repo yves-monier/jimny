@@ -42,6 +42,7 @@ export default {
   height: 100%;
   background-color: rgba(200, 200, 200, 0.7);
   position: fixed;
+  z-index: 100;
 }
 
 .dialog {
